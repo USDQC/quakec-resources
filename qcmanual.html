@@ -1,0 +1,3778 @@
+<html>
+
+<head>
+    <title>QuakeC Manual</title><!-- Changed by: 029740 Y.Nguyen venise, 15-Sep-1997 -->
+</head>
+
+<body alink="#00ff80" link="#0000ff" vlink="#008000">
+
+
+    <center>
+        <font size="+4">
+            <a name="title">
+                <b>Table of contents</b>
+            </a>
+        </font>
+    </center>
+
+    <br><br><br><br>
+
+    <h3>
+    </h3>
+    <h2>1. Introduction</h2>
+    <ul>
+        <li><a href="#What_is_QuakeC">1.1 What is QuakeC</a><br></li>
+        <li><a href="#Contributions">1.2 Contributions</a><br></li>
+    </ul>
+
+    <h2>2. QuakeC Language</h2>
+    <ul>
+        <li><a href="#Comments">2.1 Comments</a><br></li>
+        <li><a href="#Names">2.2 Names</a><br></li>
+        <li><a href="#New_types">2.3 New types</a><br></li>
+        <li><a href="#Definition_of_variables">2.4 Definition of variables</a><br></li>
+        <li><a href="#Definitions_of_constants">2.5 Definitions of constants</a><br></li>
+        <li><a href="#Definitions_of_functions">2.6 Definitions of functions</a><br></li>
+        <li><a href="#Function_declaration">2.7 Function declaration</a><br></li>
+        <li><a href="#Definition_of_a_frame_function">2.8 Definition of a frame
+                function</a><br></li>
+        <li><a href="#Conditional_construct">2.9 Conditional construct</a><br></li>
+        <li><a href="#Loop_construct">2.10 Loop construct</a><br></li>
+        <li><a href="#Function_calls">2.11 Function calls</a><br></li>
+        <li><a href="#Logical_operations">2.12 Logical operations</a><br></li>
+        <li><a href="#Comparisons">2.13 Comparisons</a><br></li>
+        <li><a href="#Operations_on_floats_or_integers">2.14 Operations on floats or
+                integers</a><br></li>
+        <li><a href="#Bitwise_operations">2.15 Bitwise operations</a><br></li>
+    </ul>
+
+    <h2>3. Builtin functions</h2>
+    <ul>
+        <li><a href="#Basic_math_functions">3.1 Basic math functions</a><br></li>
+        <li><a href="#Basic_vector_maths">3.2 Basic vector maths</a><br></li>
+        <li><a href="#Sound_emission">3.3 Sound emission</a><br></li>
+        <li><a href="#Entity_management">3.4 Entity management</a><br></li>
+        <li><a href="#Move_Entities">3.5 Move Entities</a><br></li>
+        <li><a href="#Fights_and_Shots">3.6 Fights and Shots</a><br></li>
+        <li><a href="#Collision_checking">3.7 Collision checking</a><br></li>
+        <li><a href="#Server_related_functions">3.8 Server related functions</a><br></li>
+        <li><a href="#Print_messages">3.9 Print messages</a><br></li>
+        <li><a href="#Console">3.10 Console</a><br></li>
+        <li><a href="#Debugging">3.11 Debugging</a><br></li>
+        <li><a href="#Precaching_files">3.12 Precaching files</a><br></li>
+    </ul>
+    <h2>
+        4. Defines
+    </h2>
+    <ul>
+        <li><a href="#Values_:_temporary_entities">4.1 Values : temporary entities</a>
+            <br>
+        </li>
+        <li><a href="#Values_:_Sound_Channel_of_entities">4.2 Values : Sound Channel of
+                entities</a><br></li>
+        <li><a href="#Values_:_Sound_Attenuation">4.3 Values : Sound Attenuation</a>
+            <br>
+        </li>
+        <li><a href="#Values_:_Contents_of_level_areas">4.4 Values : Contents of
+                level areas</a><br></li>
+        <li><a href="#Values_:_Entity_light_effects">4.5 Values : Entity light effects
+            </a><br></li>
+        <li><a href="#Values_:_Existing_Items">4.6 Values : Existing Items</a><br></li>
+        <li><a href="#Values_:_Behavior_of_solid_objects">4.7 Values : Behavior of
+                solid objects</a><br></li>
+        <li><a href="#Values_:_Type_of_movements">4.8 Values : Type of movements</a>
+            <br>
+        </li>
+        <li><a href="#Values_:_Entity_can_take_solid_damages">4.9 Values : Entity can
+                take solid damages</a><br></li>
+        <li><a href="#Values_:_Entity_dead_flag">4.10 Values : Entity dead flag</a><br>
+        </li>
+        <li><a href="#Values_:_Spawnflags">4.11 Values : Spawnflags</a><br></li>
+    </ul>
+    <h2>
+        <a href="#Entities">5. Entities</a><br>
+    </h2>
+    <ul>
+        <li>Static entities</li>
+        <li>Temporary entities</li>
+        <li>Dynamic entities</li>
+        <li>Definition of entity fields</li>
+        <li>Technical data</li>
+        <li>Appearance of entity</li>
+        <li>Position in 3D</li>
+        <li>Situation of the entity</li>
+        <li>Movement in 3D</li>
+        <li>Monster's Behavior</li>
+        <li>Automatic Behavior</li>
+        <li>Player/Monster stats and damage status</li>
+        <li>Player inventory</li>
+        <li>Player Fight</li>
+        <li>Deathmatch</li>
+        <li>Fields used only by Quake-C (User defined)</li>
+        <li>World fields</li>
+        <li>Quake Ed fields</li>
+        <li>Monster Behavior</li>
+        <li>Monster state variables</li>
+        <li>Object stuff</li>
+        <li>Doors</li>
+        <li>Miscellaneous</li>
+    </ul>
+    <h2>
+        <a href="#Global_variables">6. Global variables</a><br>
+        <a href="#Model_pragma">7. Model pragma</a><br>
+        <a href="#Network_protocol">8. Network protocol</a><br>
+        <a href="#Network_Builtin_functions">9. Network Builtin functions</a><br>
+        <a href="#Tips_&amp;_tricks">10. Tips &amp; tricks</a><br>
+        <a href="#Basic_Types">11. Basic Types</a><br>
+        <a href="#Compilation_of_Quake-C">12. Compilation of Quake-C</a><br>
+        <a href="#Execution_of_Quake-C">13. Execution of Quake-C</a><br>
+        14. Examples
+    </h2>
+    <ul>
+        <li><a href="#Looping_between_all_monsters">14.1 Looping between all monster</a>
+            <br>
+        </li>
+        <li><a href="#Creating_a_new_entity">14.2 Creating a new entity</a><br></li>
+        <li><a href="#Setting_point_of_view">14.3 Setting point of view</a><br></li>
+        <li><a href="#Teleporting">14.4 Teleporting</a><br></li>
+        <li><a href="#Throwing_your_eyes">14.5 Throwing your Eyes</a><br></li>
+        <li><a href="#Radar">14.6 Radar</a><br></li>
+    </ul>
+
+
+
+
+
+    <br>
+    <hr>
+    <h2><u>
+            1. Introduction
+        </u></h2>
+    <br>
+
+    <u>
+        <h3><a name="What_is_QuakeC">1.1 What is QuakeC?</a></h3>
+    </u>
+
+    QuakeC is a language similar to C.<br>
+    QuakeC can be compiled with qcc (Quake C compiler) to produce progs.dat,
+    a file that Quake can load at startup. In that file, Quake searches the engines for
+    various things in the Quake World.<br>
+    Monsters, players, buttons, weapons are the target of QuakeC, you cannot
+    modify levels or graphics that you can modify with a external editor.<br>
+    Major part of this document are copyright by Olivier Montanuy . All the
+    informations contained in this document are related to Quake-C, a language developed
+    by and for <a href="#www.idsoftware.com">Id Software</a>, so all those informations
+    are copyright (c) 1996, <a href="#www.idsoftware.com">Id Software</a>.<br>
+    To compile and use all the code you must have qcc.tar.gz take it from
+    <a href="#www.idsoftware.com">Id Software</a>. You can edit and then compile with
+    qccdos (the compiler) all the .qc files. You can rewrote all AI of the monster or
+    create new entities.<br>
+    I have only converted, corrected and added some stuff.<br>
+    <br><br>
+
+    <u>
+        <h3><a name="Contributions">1.2 Contributions</a></h3>
+    </u>
+
+    Olivier Montanuy is the real compiler of this document, it was first
+    rearranged to a TXT version by Francesco Ferrara. Many thanks to Olivier and
+    Francesco.<br>
+    For those who wants to, you can <a href="http://members.fortunecity.com/kwarenda/qcmanual.zip">download</a> the text
+    version
+    (zipped 28 Ko).<br>
+    <br>
+    <hr>
+
+
+
+
+    <h2><u>2. QuakeC Language - Basic constructs</u></h2><br>
+
+    <h3><u><a name="Comments">2.1 Comments</a></u></h3>
+
+    // followed by comments, until the next line.<br>
+    /* enclose a block comments */<br><br>
+
+    Those comments are the same as in C++ (and many C languages).<br>
+    <br><br>
+
+    <h3><u><a name="Names">2.2 Names</a></u></h3>
+
+    Names of variable, field, or function have a maximum size of 64 characters,
+    must begin with A-Z,a-z, or _, and can continue with those characters or 0-9.<br>
+    <br><br>
+
+    <h3><u><a name="New_types">2.3 New types</a></u></h3>
+
+    You cannot define new types from the existing ones. In particular, you cannot
+    define new structures, new objects, and you cannot affect a new name to a type
+    (as does typedef in C).<br>
+    <br>
+    These restrictions make Quake-C compare unfavourably even to Basic, and sure
+    it's about time the <a href="#www.idsoftware.com">Id Software</a> guys hired
+    someone that already wrote a compiler.<br>
+    <br>
+    You can add only fields to the most important type in QuakeC entity.<br>
+    <br><br>
+
+
+
+
+    <h3><u><a name="Definition_of_variables">2.4 Definition of variables</a></u></h3>
+
+    <xmp>
+        type variable1, variable2;
+        eg:
+        float a,b;
+    </xmp>
+
+    Where type is one of the pre-defined simple types.<br>
+    You can also affect default values to variables, for instance :<br>
+    <xmp>
+        type variable1 = value;
+        eg:
+        float a = 2;
+    </xmp>
+    Scoping of variables : There are two levels of scoping. By default all variables
+    are global : they can be accessed by any functions, and they are shared by all the
+    functions (and all the clients of a given network server, of course).<br>
+    <br>
+    But inside the functions, by using the keyword local just before the declaration
+    of a variable, you can make this variable visible only the function itself
+    (i.e. it will be allocated on the stack).<br>
+    <br>
+    Note that parameters of functions are treated like local variables : they are only
+    visible to the function, but they can be modified.<br>
+    <br>
+    <br>
+
+
+
+    <u></u>
+    <h3><u><a name="Definitions_of_constants">2.5 Definitions of constants</a></u></h3>
+
+    Any global variable that is initialized by setting a value to it, is actually assumed
+    to be a constant.<br>
+    <br>
+    Since a constant is in fact represented by immediate values, you should
+    <font color="#ff0000">NEVER</font> attempt to modify a constant by giving it another
+    value. Otherwise the program might have unpredicable results.<br>
+    <br>
+    The constants are not saved to game files. Only regular variables are.<br>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Definitions_of_functions">2.6 Definitions of functions</a></u></h3>
+
+    The general structure of a function definition is :<br>
+    <xmp>
+        type (type param1, typeparam2, ... ) function =
+        {
+        ... code ...
+        };
+    </xmp>
+    Don't forget the ";" after the brackets.<br>
+    <br>
+    Here are some examples :<br>
+    <xmp>
+        void() think = {...};
+        entity() FindTarget = {...};
+        void(vector destination, float speed, void() callback) SUB_CalcMove = {...};
+    </xmp><br><br>
+
+
+    <u></u>
+    <h3><u><a name="Function_declaration">2.7 Function declaration</a></u></h3>
+
+    If you want to use a function before defining it, you must declare it, otherwise
+    the Quake-C compiler will not be able to use it.<br>
+    <br>
+    The general structure of a function declaration is:
+    <xmp>
+        type (type param1, typeparam2, ... ) function;
+    </xmp><br><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Definition_of_a_frame_function">2.8 Definition of a frame
+                function</a></u></h3>
+
+    Frame functions (also called States) are special functions made for convenience.
+    They are meant to facilitate the definition of animation frames, by making them
+    more readable.<br>
+    <br>
+    Here is an example :<br>
+    <xmp>
+        void() framename = [$framenum, nextthink] { ...code...};
+    </xmp>
+    It is strictly equivalent to :<br>
+    <xmp>
+        void() framename =
+        {
+        self.frame= $framenum; // the model frame to displayed
+        self.nextthink = time + 0.1; // next frame happens in 1/10 of second
+        self.think = nextthink; // the function to call at the next frame
+        ...code...
+        };
+    </xmp><br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Conditional_construct">2.9 Conditional construct</a></u></h3>
+    <xmp>
+        if( expression )
+        {
+        statements
+        }
+        else
+        {
+        statements
+        }
+    </xmp><br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Loop_construct">2.10 Loop construct</a></u></h3>
+    <xmp>
+        while( expression )
+        {
+        statements
+        }
+    </xmp>
+    or
+    <xmp>
+        do
+        {
+        statements
+        }while( expression )
+    </xmp>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Function_calls">2.11 Function calls</a></u></h3>
+
+    Call a function :<br>
+    <xmp>
+        function_name ( parameter1, parameter2,... )
+    </xmp>
+    The cannot be more than 8 parameters.<br>
+    <br>
+    Return a value :<br>
+    <xmp>
+        return( expression )
+    </xmp><br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Logical_operations">2.12 Logical operations</a></u></h3>
+    <xmp>
+        ! // logical not
+        &amp;&amp; // logical and
+        || // logical or
+    </xmp>
+    Take care that in if() conditional expressions containing two or more
+    logical clauses, all the clauses will be evaluated before the condition
+    test (like in Basic, and unlike C).<br>
+    <br>
+    That means that if one part of your condition is not always valid or
+    defined, you had better decompose your if() into two successive if().
+    It should also make it faster.<br>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Comparisons">2.13 Comparisons</a></u></h3>
+    <xmp>
+        &lt;= &lt; &gt;= &gt;
+        == // equal, beware at the double = like in C.
+        != // not equal, like in C.
+    </xmp><br><br>
+
+
+
+    <u></u>
+    <h3><u><a name="Operations_on_floats_or_integers">2.14 Operations on floats or
+                integers</a></u></h3>
+    <xmp>
+        * / - +
+    </xmp>
+    Use parenthesis to remove ambiguities.<br>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Bitwise_operations">2.15 Bitwise operations </a></u></h3>
+    <xmp>
+        &amp; // bitwise and
+        | // bitwise or
+    </xmp>
+    These operators treat floats like integers, so they are usually meant to
+    be used with values made of bit masks.<br>
+    <br>
+    <hr>
+    <br>
+
+
+
+
+
+
+
+    <h2><u>3. Builtin functions</u></h2><br>
+
+
+    These are the built-in functions of Quake C. Since they are hard-coded
+    in C, they cannot be redefined, but they are very fast.<br>
+    <br>
+    <u></u>
+    <h3><u><a name="Basic_math_functions">3.1 Basic math functions</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: anglemod
+
+                        float anglemod (float angle)
+                    </xmp>
+                </td>
+                <td>Returns angle in degree, modulo 360.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: rint
+
+                        float rint(float val)
+                    </xmp>
+                </td>
+                <td>Returns val, rounded up to the closest integer value.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: floor
+
+                        float floor(float val)
+                    </xmp>
+                </td>
+                <td>Returns val, rounded up to the integer below (like the equivalent
+                    function in C).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: ceil
+
+                        float ceil(float val)
+                    </xmp>
+                </td>
+                <td>Returns val, rounded up to the integer above (like the equivalent
+                    function in C).</td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: fabs
+
+                        float fabs(float val)
+                    </xmp>
+                </td>
+                <td>Returns absolute value of val (like the equivalent function in C).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: random
+
+                        float random()
+                    </xmp>
+                </td>
+                <td>Returns a random floating point number between 0.0 and 1.0.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: ftos
+
+                        string ftos(float value)
+                    </xmp>
+                </td>
+                <td>Float to string: converts value to string.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Basic_vector_maths">3.2 Basic vector maths</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: normalize
+
+                        vector normalize(vector v)
+                    </xmp>
+                </td>
+                <td>Returns a vector of length 1. Gives the vector colinear to v, but of
+                    length 1. This can be useful for calculation of distance along an axis.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: vlen
+
+                        float vlen(vector v)
+                    </xmp>
+                </td>
+                <td>Returns the length of vector v (never &lt; 0).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: vectoyaw
+
+                        float vectoyaw(vector v)
+                    </xmp>
+                </td>
+                <td>Returns and angle in degree. Vector to yaw : calculates the yaw angle
+                    (bearing) corresponding to a given 3D direction v.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: vectoangles
+
+                        vector vectoangles(vector v)
+                    </xmp>
+                </td>
+                <td>returns vector 'pitch yaw 0 '<br>
+                    Vector to angles : calculates the pitch angle (aiming) and yaw angle
+                    (bearing) corresponding to a given 3D direction v.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: vtos
+
+                        string vtos(vector v)
+                    </xmp>
+                </td>
+                <td>Vector to String : print a vector, as a string.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: makevectors
+
+                        void makevectors(vector angles)
+                        angle = 'pitch yaw 0'
+                    </xmp>
+                </td>
+                <td>Calculate the vectors pointing forward, right and up, according to the provided angles.
+                    Returns result in the global variables :
+                    <xmp>
+                        vector v_forward; // points forward
+                        vector v_up; // points up
+                        vector v_right; // points toward the right
+                    </xmp>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Sound_emission">3.3 Sound emission</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: sound
+
+                        void sound (entity source,
+                        float channel, string sample,
+                        float volume, float attenuation)
+                    </xmp>
+                </td>
+                <td>source = entity emiting the sound (ex: self)<br>
+                    channel = channel to use for sound<br>
+                    sample = name of the sample WAV file (ex: "ogre/ogdrag.wav")<br>
+                    volume = 0.0 for low volume, 1.0 for maximum volume<br>
+                    attenuation= attenuation of sound<br>
+                    The entity emits a sound, on one of it's 8 channels.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: ambientsound
+
+                        void ambientsound(vector
+                        position, string sample, float
+                        volume, float attenuation)
+                    </xmp>
+                </td>
+                <td>position = position, in 3D space, inside the level
+                    sample = name of the sample WAV file (ex: "ogre/ogdrag.wav")<br>
+                    volume = 0.0 for low volume, 1.0 for maximum volume<br>
+                    attenuation = attenuation of sound<br>
+                    An ambient sound is emited, from the given position.</td>
+            </tr>
+
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Entity_management">3.4 Entity management</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: spawn
+
+                        entity spawn ()
+                    </xmp>
+                </td>
+                <td>Returns an empty entity.<br>
+                    Create a new entity, totally empty. You can manually set every field, or
+                    just set the origin and call one of the existing entity setup functions.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: remove
+
+                        void remove (entity e)
+                    </xmp>
+                </td>
+                <td>Removes entity e from the world (R.I.P.).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: makestatic
+
+                        void makestatic (entity e)
+                    </xmp>
+                </td>
+                <td>Make an entity static to the world, by sending a broadcast message
+                    to the network. The entity is then removed from the list of dynamic entities
+                    in the world, and it cannot be deleted (until the level ends).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: nextent
+
+                        entity nextent(entity e)
+                    </xmp>
+                </td>
+                <td>Returns entity that is just after e in the entity list.<br>
+                    Useful to browse the list of entities, because it skips the undefined ones.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: find
+
+                        entity find (entity start,
+                        .string field, string match)
+                    </xmp>
+                </td>
+                <td>start = begining of list to search (world, for the begining of list)<br>
+                    field = entity field that must be examined (ex: targetname)<br>
+                    match = value that must be matched (ex: other.target)<br>
+                    Returns the entity found, or world if no entity was found.<br>
+                    Searches the server entity list beginning at start, looking for an entity
+                    that has entity.field = match.<br>
+                    Example : find the first player entity
+                    <xmp>
+                        e = find( world, classname, "player");
+                    </xmp>
+                    Take care that field is a name of an entity field, without dot, and without quotes.
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: findradius
+
+                        entity findradius (vector
+                        origin, float radius)
+                    </xmp>
+                </td>
+                <td>origin = origin of sphere<br>
+                    radius = radius of sphere<br>
+                    Returns a chain of entities that have their origins within a spherical
+                    area. The entity returned is e, and the next in the chain is e.chain,
+                    until e==FALSE. Typical usage: find and harm the victims of an explosion.<br>
+                    Example :
+                    <xmp>
+                        e = findradius( origin, radius)
+                        while(e)
+                        {
+                        T_Damage(e, ... ) // Let God sort his ones!
+                        e = e.chain
+                        }
+                    </xmp>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: setmodel
+
+                        void setmodel (entity e,
+                        string model)
+                    </xmp>
+                </td>
+                <td>e = entity whose model is to be set<br>
+                    model = name of the model (ex: "progs/soldier.mdl")<br>
+                    Changes the model associated to an entity. This model should also be declared
+                    by precache_model. Please set e.movetype and e.solid first.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: lightstyle
+
+                        void lightstyle(float style,
+                        string value)
+                    </xmp>
+                </td>
+                <td>style = index of the light style, from 0 to 63.<br>
+                    value = (ex: "abcdefghijklmlkjihgfedcb")<br>
+                    Modifies a given light style. The light style is used to create cyclic
+                    lighting effects, like torches or teleporter lighting. There are 64 light
+                    tyles, from 0 to 63. If style is not strictly comprised in these values,
+                    the game may crash. Styles 32-62 are assigned by the light program for
+                    switchable lights. Value is a set of characters, whose ascii value indicates
+                    a light level, from "a" (0) to "z" (30).</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Move_Entities">3.5 Move Entities</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: ChangeYaw
+
+                        void ChangeYaw()
+                    </xmp>
+                </td>
+                <td>Change the horizontal orientation of self. Turns towards self.ideal_yaw
+                    at self.yaw_speed, and sets the global variable current_yaw.<br>
+                    Called every 0.1 sec by monsters.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: walkmove
+
+                        float walkmove(float yaw,
+                        float dist)
+                    </xmp>
+                </td>
+                <td>Returns TRUE or FALSE.<br>
+                    Moves self in the given direction.<br>
+                    Returns FALSE if could not move (used to detect blocked monsters).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: droptofloor
+
+                        float droptofloor()
+                    </xmp>
+                </td>
+                <td>Returns TRUE or FALSE.<br>
+                    Drops self to the floor, if the floor is less than -256 coordinates below.
+                    Returns TRUE if landed on floor. Mainly used to spawn items or walking
+                    monsters on the floor.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: setorigin
+
+                        void setorigin (entity e,
+                        vector position)
+                    </xmp>
+                </td>
+                <td>e = entity to be moved<br>
+                    position = new position for the entity<br>
+                    Move an entity to a given location. That function is to be used when spawning
+                    an entity or when teleporting it. This is the only valid way to move an object
+                    without using the physics of the world (setting velocity and waiting). DO NOT
+                    change directly e.origin, otherwise internal links would be screwed, and entity
+                    clipping would be messed up.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: setsize
+
+                        void setsize (entity e,
+                        vector min, vector max)
+                    </xmp>
+                </td>
+                <td>e = entity whose bounding box is to be set<br>
+                    min = minimum, for bounding box (ex: VEC_HULL2_MIN)<br>
+                    max = maximum, for bounding box (ex: VEC_HULL2_MAX)<br>
+                    Set the size of the entity bounding box, relative to the entity origin. The size
+                    box is rotated by the current angle.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>
+                        Function: movetogoal
+
+                        void movetogoal (float step)
+                    </xmp>
+                </td>
+                <td>Move self toward it's goal.<br>
+                    Used for monsters.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Fights_and_Shots">3.6 Fights and Shots</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: aim
+
+                        vector aim(entity e,
+                        float missilespeed)
+                    </xmp>
+                </td>
+                <td>Returns a vector along which the entity e can shoot.<br>
+                    Usually, e is a player, and the vector returned is calculated by auto-aiming to
+                    the closest enemy entity.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>&lt;TR&gt;
+                        &lt;TD&gt;&lt;XMP&gt;Function: particle
+
+                        void particle(vector origin,
+                        vector dir, float color,
+                        float count)
+                    </xmp>
+                </td>
+                <td>origin = initial position<br>
+                    dir = initial direction<br>
+                    color = color index (73,75...)<br>
+                    count = time to live, in seconds .Create a particle effect (small dot that
+                    flies away).<br>
+                    color = 0 for chunk<br>
+                    color = 75 for yellow<br>
+                    color = 73 for blood red<br>
+                    color = 225 for entity damage</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: checkclient
+
+                        entity checkclient()
+                    </xmp>
+                </td>
+                <td>Returns client (or object that has a client enemy) that would be a valid
+                    target. If there are more than one valid options, they are cycled each frame.<br>
+                    If (self.origin + self.viewofs) is not in the PVS of the target, 0 (false) is
+                    returned.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Collision_checking">3.7 Collision checking</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: traceline
+
+                        traceline (vector v1,
+                        vector v2, float nomonsters,
+                        entity forent)
+                    </xmp>
+                </td>
+                <td>v1= start of line<br>
+                    v2= end of line<br>
+                    nomonster= if TRUE, then see through other monsters, else FALSE.<br>
+                    forent= ignore this entity, it's owner, and it's owned entities.
+                    if forent = world, then ignore no entity.<br>
+                    Trace a line of sight, possibly ignoring monsters, and possibly ignoring the
+                    entity forent (usually, forent = self). This function is used very often, tracing
+                    and shot targeting. Traces are blocked by bounding boxes and exact bsp entities.
+                    Returns the results in the global variables :
+                    <xmp>
+                        float trace_allsolid;
+                        // never used
+                        float trace_startsolid;
+                        // never used
+                        float trace_fraction;
+                        // fraction (percent) of the line
+                        // that was traced, before
+                        // an obstacle was hit. Equal to 1
+                        // if no obstacle were found.
+                        vector trace_endpos;
+                        // point where line ended or met an
+                        // obstacle.
+                        vector trace_plane_normal;
+                        // direction vector of trace (?)
+                        float trace_plane_dist;
+                        // distance to impact along direction
+                        // vector (?)
+                        entity trace_ent;
+                        // entity hit by the line
+                        float trace_inopen;
+                        // boolean, true if line went through
+                        // non-water area.
+                        float trace_inwater;
+                        // boolean, true if line went through
+                        // water area.
+                    </xmp>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: checkpos
+
+                        CURRENTLY DISABLED. DO NOT USE.
+                        scalar checkpos (entity e,
+                        vector position)
+                    </xmp>
+                </td>
+                <td>Returns true if the given entity can move to the given position from it's
+                    current position by walking or rolling.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: checkbottom
+
+                        float checkbottom(entity e)
+                    </xmp>
+                </td>
+                <td>e = entity that is to be checked<br>
+                    Return TRUE or FALSE.<br>
+                    Returns TRUE if on the ground. Used only for jumping monster, that need to jump
+                    randomly not to get hung up (or whatever it actually means).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: pointcontents
+
+                        float pointcontents(vector pos)
+                    </xmp>
+                </td>
+                <td>Returns the contents of the area situated at position pos.<br>
+                    Used to know if an area is in water, in slime or in lava.<br>
+                    Makes use of the BSP tree, and is supposed to be very fast.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Server_related_functions">3.8 Server related functions</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: changelevel
+
+                        void changelevel (string mapname)
+                    </xmp>
+                </td>
+                <td>Warp to the game map named mapname. Actually executes the console
+                    command "changelevel" + mapname, so if you want to alias it...</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: setspawnparms
+
+                        void setspawnparms (entity client)
+                    </xmp>
+                </td>
+                <td>Restore the original spawn parameters of a client entity.<br>
+                    Doesn't work if client is not a player.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: stuffcmd
+
+                        stuffcmd (entity client,
+                        string text)
+                    </xmp>
+                </td>
+                <td>client = player that is to receive the command<br>
+                    text = text of the command, ended by \n (newline).<br>
+                    Send a command to a given player, as if it had been typed on the player's
+                    console. Don't forget the \n (newline) at the end, otherwise your command
+                    will not be executed, and will stand still on the console window.<br>
+                    Examples :
+                    <xmp>
+                        stuffcmd(self, "bf\n");
+                        // create a flash of
+                        // light on the screen.
+                        stuffcmd(self, "name Buddy\n");
+                        // name the player Buddy.
+                    </xmp>
+                    Mostly used to send the command bf, that creates a flash of light on the client's screen.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Print_messages">3.9 Print messages</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: bprint
+
+                        void bprint (string text)
+                    </xmp>
+                </td>
+                <td>text = text of the message<br>
+                    Broadcast a message to all players on the current server.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: centerprint
+
+                        void centerprint( entity client,
+                        string text)
+                    </xmp>
+                </td>
+                <td>client = player that is to receive the message<br>
+                    text = text of the message<br>
+                    Sends a message to a specific player, and print it centered.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: sprint
+
+                        void sprint (entity client,
+                        string text)
+                    </xmp>
+                </td>
+                <td>client = player that is to receive the message<br>
+                    text = text of the message<br>
+                    Sends a message to a player.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Console">3.10 Console</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: localcmd
+
+                        void localcmd (string text)
+                    </xmp>
+                </td>
+                <td>text = text of the command, ended by \n (newline).<br>
+                    Execute a command on the server, as if it had been typed on the server's console.<br>
+                    Examples :<br>
+                    <xmp>
+                        localcmd("restart\n");
+                        // restart the level
+                        localcmd("teamplay 1\n");
+                        // set deathmatch mode to teamplay
+                        localcmd("killserver\n");
+                        // poor server...
+                    </xmp>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: dprint
+
+                        void dprint (string text)
+                    </xmp>
+                </td>
+                <td>text = text of the message<br>
+                    Prints a message to the server console.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: cvar
+
+                        float cvar (string variable)
+                    </xmp>
+                </td>
+                <td>variable = see console variables<br>
+                    Returns the value of a console variable.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: cvar_set
+
+                        float cvar_set (string variable,
+                        string value)
+                    </xmp>
+                </td>
+                <td>variable = see console variables<br>
+                    Sets the value of a console variable.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Debugging">3.11 Debugging</a></u></h3>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: eprint
+
+                        void eprint (entity e)
+                    </xmp>
+                </td>
+                <td>e = entity to print<br>
+                    Print details about a given entity (for debug purposes).</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: coredump
+
+                        void coredump()
+                    </xmp>
+                </td>
+                <td>Print all entities</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: traceon
+
+                        void traceon()
+                    </xmp>
+                </td>
+                <td>Start tracing functions, end them with traceoff()</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: traceoff
+
+                        void traceoff()
+                    </xmp>
+                </td>
+                <td>End traces started by traceon()</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: break
+
+                        void break()
+                    </xmp>
+                </td>
+                <td>Exit the programs. Never used?</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: error
+
+                        void error (string text)
+                    </xmp>
+                </td>
+                <td>Print an error message.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: objerror
+
+                        void objerror (string text)
+                    </xmp>
+                </td>
+                <td>Print an error message related to object self.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+
+
+    <u></u>
+    <h3><u><a name="Precaching_files">3.12 Precaching files</a></u></h3>
+
+    Those functions are used to declare models, sounds and stuff, before
+    the PAK file is built. Just follow this rule : whenever one of your
+    functions makes use of a file that's not defined in Quake, precache
+    this file in a function that will be called by worldspawn(). Then, the
+    QCC compiler can automatically include in the PAK file all the files that
+    you really need to run your programs.<br>
+    And when the level starts running, those precache orders will be executed,
+    so as to attribute a fixed table index to all those files. DO NOT USE
+    those functions in code that will be called after worldspawn() was called. As
+    a matter of fact, that could bomb Quake (restarting the level, without
+    crashing the game).<br>
+    Files can only be precached in spawn functions.<br>
+    <br>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <td><b>
+                        <center>QuakeC code</center>
+                    </b></td>
+                <td><b>
+                        <center>Notes</center>
+                    </b></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: precache_file
+
+                        void precache_file(string file)
+                    </xmp>
+                </td>
+                <td>file = name of the file to include in PAK file.<br>
+                    Does nothing during game play.<br>
+                    Use precache_file2 for registered Quake.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: precache_model
+
+                        void precache_model(string file)
+                    </xmp>
+                </td>
+                <td>file = name of the MDL or BSP file to include in PAK file.<br>
+                    Does nothing during game play. Must be used in a model's spawn function,
+                    to declare the model file. Use precache_model2 for registered Quake.</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <xmp>Function: precache_sound
+
+                        void precache_sound(string file)
+                    </xmp>
+                </td>
+                <td>file = name of the WAV file to include in PAK file.<br>
+                    Does nothing during game play. Must be used in a model's spawn function,
+                    to declare the sound files. Use precache_sound2 for registered Quake.</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
+
+
+
+
+    <h2><u>4. Defines</u></h2><br>
+
+
+    <u></u>
+    <h3><u><a name="Values_:_temporary_entities">4.1 Values : temporary entities</a></u></h3>
+
+    Information copied from the DEM specifications
+    <xmp>
+        // point entity is a small point like entity.
+        0 TE_SPIKE unknown
+        1 TE_SUPERSPIKE superspike hits (spike traps)
+        2 TE_GUNSHOT hit on the wall (Axe, Shotgun)
+        3 TE_EXPLOSION grenade/missile explosion
+        4 TE_TAREXPLOSION explosion of a tarbaby
+        7 TE_WIZSPIKE wizard's hit
+        8 TE_KNIGHTSPIKE hell knight's shot hit
+        10 TE_LAVASPLASH Chthon awakes and falls dead
+        11 TE_TELEPORT teleport end
+        // large entity is a 2 dimensional entity.
+        5 TE_LIGHTNING1 flash of the Shambler
+        6 TE_LIGHTNING2 flash of the Thunderbolt
+        9 TE_LIGHTNING3 flash in e1m7 to kill Chthon
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Sound_Channel_of_entities">4.2 Values : Sound
+                Channel of entities</a></u></h3>
+    <xmp>
+        CHAN_AUTO = 0; // Create a new sound
+        CHAN_WEAPON = 1; // Replace entitie's weapon noise
+        CHAN_VOICE = 2; // Replace entitie's voice
+        CHAN_ITEM = 3; // Replace entitie's item noise
+        CHAN_BODY = 4; // Replace entitie's body noise
+    </xmp>
+    Those values are meant to be used with the function sound.<br>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Sound_Attenuation">4.3 Values : Sound Attenuation</a></u></h3>
+    <xmp>
+        ATTN_NONE = 0; // full volume everywhere in the leve
+        ATTN_NORM = 1; // normal
+        ATTN_IDLE = 2; // [FIXME]
+        ATTN_STATIC = 3; // [FIXME]
+    </xmp>
+    Those values are meant to be used with the functions sound and ambientsound.<br>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Contents_of_level_areas">4.4 Values : Contents of
+                level areas</a></u></h3>
+    <xmp>
+        CONTENT_EMPTY = -1; // Empty area
+        CONTENT_SOLID = -2; // Totally solid area (rock)
+        CONTENT_WATER = -3; // Pool of water
+        CONTENT_SLIME = -4; // Pool of slime
+        CONTENT_LAVA = -5; // Lava
+        CONTENT_SKY = -6; // Sky
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Entity_light_effects">4.5 Values : Entity light effects</a></u></h3>
+    <xmp>
+        EF_BRIGHTFIELD = 1; // Glowing field of dots
+        EF_MUZZLEFLASH = 2;
+        EF_BRIGHTLIGHT = 4;
+        EF_DIMLIGHT = 8;
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Existing_Items">4.6 Values : Existing Items</a></u></h3>
+    <xmp>
+        IT_AXE = 4096;
+        IT_SHOTGUN = 1;
+        IT_SUPER_SHOTGUN = 2;
+        IT_NAILGUN = 4;
+        IT_SUPER_NAILGUN = 8;
+        IT_GRENADE_LAUNCHER = 16;
+        IT_ROCKET_LAUNCHER = 32;
+        IT_LIGHTNING = 64;
+        IT_EXTRA_WEAPON = 128;
+        IT_SHELLS = 256;
+        IT_NAILS = 512;
+        IT_ROCKETS = 1024;
+        IT_CELLS = 2048;
+        IT_ARMOR1 = 8192;
+        IT_ARMOR2 = 16384;
+        IT_ARMOR3 = 32768;
+        IT_SUPERHEALTH = 65536;
+        IT_KEY1 = 131072;
+        IT_KEY2 = 262144;
+        IT_INVISIBILITY = 524288;
+        IT_INVULNERABILITY = 1048576;
+        IT_SUIT = 2097152;
+        IT_QUAD = 4194304;
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Behavior_of_solid_objects">4.7 Values : Behavior
+                of solid objects</a></u></h3>
+    <xmp>
+        SOLID_NOT = 0; // no interaction with other objects
+        // inactive triggers
+        SOLID_TRIGGER = 1; // touch on edge, but not blocking
+        // active triggers, pickable items
+        // (.MDL models, like armors)
+        SOLID_BBOX = 2; // touch on edge, block
+        // pickable items (.BSP models, like ammo box)
+        // grenade, missiles
+        SOLID_SLIDEBOX = 3; // touch on edge, but not an onground
+        // most monsters
+        SOLID_BSP = 4; // bsp clip, touch on edge, block
+        // buttons, platforms, doors, missiles
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Type_of_movements">4.8 Values : Type of movements</a></u></h3>
+    <xmp>
+        MOVETYPE_NONE = 0; // never moves
+        //float MOVETYPE_ANGLENOCLIP = 1;
+        //float MOVETYPE_ANGLECLIP = 2;
+        MOVETYPE_WALK = 3; // Walking players only
+        MOVETYPE_STEP = 4; // Walking monster
+        MOVETYPE_FLY = 5; // Hovering Flight
+        // meant for flying monsters (and players)
+        MOVETYPE_TOSS = 6; // Balistic flight
+        // meant for gibs and the like
+        MOVETYPE_PUSH = 7; // Not blocked by the world, push and crush
+        // meant for doors, spikes and crusing platforms
+        MOVETYPE_NOCLIP = 8; // Not blocked by the world
+        MOVETYPE_FLYMISSILE = 9; // like fly, but size enlarged against monsters
+        // meant for rockets
+        MOVETYPE_BOUNCE = 10; // bounce off walls
+        MOVETYPE_BOUNCEMISSILE = 11 // bounce off walls, but size enlarged against monsters
+        // meant for grenades
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Entity_can_take_solid_damages">4.9 Values : Entity can
+                take solid damages</a></u></h3>
+    <xmp>
+        DAMAGE_NO = 0; // Can't be damaged
+        DAMAGE_YES = 1; // Grenades don't explode when touching entity
+        DAMAGE_AIM = 2; // Grenades explode when touching entity
+    </xmp>
+    Most damageable entities have DAMAGE_AIM, so that when they chew on a
+    grenade, it explodes. If you make an entity DAMAGE_YES, the grenades will bounce
+    off it.<br>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Entity_dead_flag">4.10 Values : Entity dead flag
+            </a></u></h3>
+    <xmp>
+        DEAD_NO = 0; // still living
+        DEAD_DYING = 1; // dying (helpless)
+        DEAD_DEAD = 2; // really dead
+        DEAD_RESPAWNABLE = 3; // dead, but can respawn
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Values_:_Spawnflags">4.11 Values : Spawnflags</a></u></h3>
+
+    The spawn flags are bit fields, whose interpretation depend on the concerned
+    entity. There is quite a bit of a hack, that could cause unexpected bugs in
+    the Quake C code.
+    <xmp>
+        DOOR_START_OPEN = 1; // allow entity to be lighted in
+        // closed position
+        SPAWN_CRUCIFIED= 1; // for zombie
+        PLAT_LOW_TRIGGER = 1; // for func_plat
+        SPAWNFLAG_NOTOUCH= 1;
+        SPAWNFLAG_NOMESSAGE= 1;
+        PLAYER_ONLY = 1;
+        SPAWNFLAG_SUPERSPIKE = 1; // for spike shooter
+        SECRET_OPEN_ONCE = 1; // secret door, stays open
+        PUSH_ONCE = 1;
+        WEAPON_SHOTGUN = 1; // weapon, shotgun
+        H_ROTTEN = 1; // health, rotten (5-10 points)
+        WEAPON_BIG2 = 1; // items
+        START_OFF = 1; // light, is off at start.
+        SILENT = 2;
+        SPAWNFLAG_LASER = 2; // for spike shooter
+        SECRET_1ST_LEFT = 2; // secret door, 1st move is left of arrow
+        WEAPON_ROCKET = 2; // weapon, rocket
+        H_MEGA = 2; // health, mega (100 points)
+        DOOR_DONT_LINK = 4;
+        SECRET_1ST_DOWN = 4; // secret door, 1st move is down from arrow
+        WEAPON_SPIKES = 4; // weapon, nailgun
+        DOOR_GOLD_KEY = 8;
+        SECRET_NO_SHOOT = 8; // secret door, only opened by trigger
+        WEAPON_BIG = 8; // weapon, super model
+        DOOR_SILVER_KEY = 16;
+        SECRET_YES_SHOOT = 16; // secret door, shootable even if targeted
+        DOOR_TOGGLE = 32;
+    </xmp>
+    <br>
+    <hr>
+    <br>
+    <br>
+
+
+
+
+
+
+    <u></u>
+    <h2><u><a name="Entities">5. Entities</a></u></h2><br>
+
+    Part of this information is derived from the DEM file specs 1.0.2 by Uwe
+    Girlich.<br>
+    <br>
+    In Quake, monsters, players, items, and the level itself are all entities.
+    There are three kind of entities, and you will all encounter them in Quake-C
+    code.<br>
+    <br>
+
+    <u>
+        <h3>Types of entities</h3>
+    </u>
+
+
+    <dl compact="compact">
+        <dt><b>Static entities</b>
+            <br><br>
+        </dt>
+        <dd>A static entity doesn't interact with the rest of the game. These
+            are flames (progs/flame.mdl), lights, illusionary objects, and the like.
+            It is never be necessary to reference such an entity, so they don't get
+            an entity reference number.<br>
+            <br>
+            A static entity will be created by the function :<br>
+            <xmp>
+                makestatic()
+            </xmp>
+            (it causes a spawnstatic message to be sent to every client).<br>
+            A static entity cannot be removed, once created.<br>
+            <br>
+            The maximum number of static entities is 127.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Temporary entities</b>
+            <br><br>
+        </dt>
+        <dd>A temporary entity is a short life time entity. For instance, Quake
+            uses these entities for hits on the wall (point-like entities) or for
+            the Thunderbolt flash (line-like entities), gun shots, and anything that
+            is not supposed to last more than one frame.<br>
+            <br>
+            A temporary entity will be created by sending a valid temporary entity
+            message.<br>
+            A temporary entity doesn't need to be removed, it disappears by itself.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Dynamic entities</b>
+            <br><br>
+        </dt>
+        <dd>A dynamic entity is anything which changes its behaviour or its
+            appearance. These are ammunition boxes, spinning armors, player models and
+            the like.<br>
+            <br>
+            A dynamic entity will be created by the sequence :
+            <xmp>
+                entity = spawn();
+                setmodel( entity, "progs/entity.mdl" );
+                setsize( entity, vector_min, vector_max);
+                setorigin( entity, position );
+            </xmp>
+            It will have to be removed by the function :
+            <xmp>
+                remove( entity );
+            </xmp>
+            The maximum number of dynamic entities is 449.<br>
+            <br>
+            <br>
+
+
+
+        </dd>
+        <dt><b>Definition of entity fields</b>
+            <br><br>
+        </dt>
+        <dd>These are the fields that are available in the entity objects
+            (like self, other). Beware that this is not true object oriented
+            programming : there is no protection when accessing those fields,
+            and no guaranty on the validity of values. So if you put garbage
+            there you will probably crash the game.<br>
+            <br>
+            You can add custom fields (for instance, to store the ammo count
+            of a new weapon you created) but those fields must not be situated
+            among thoses that are common between Quake-C and Quake.exe. Otherwise,
+            Quake.exe would have to be re-compiled. So those fields must be situated
+            after the fake variable called end_sys_fields, in the field definitions.<br>
+            <br>
+            Fields shared between Quake.exe and Quake-C.<br>
+            <br>
+            These fields describe the most common entity fields. They are shared
+            between the C code of Quake.exe, and the Quake-C code of PROGS.DAT.<br>
+            <br>
+            Some of the fields are managed by the C code : you can read their value,
+            but YOU SHOULD NEVER MODIFY THEIR VALUE DIRECTLY (there are special
+            built-in functions for that).<br>
+            <br>
+            <br>
+
+
+
+        </dd>
+        <dt><b>Technical data</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity chain; // next entity, in a chain list of entities
+                float ltime; // local time for entity
+                float teleport_time; // to avoid backing up
+                float spawnflags; // see possible values.
+            </xmp>
+
+        </dd>
+        <dt><b>Appearance of entity</b>
+        </dt>
+        <dd>
+            <xmp>
+                float modelindex; // index of model, in the precached list
+                string classname; // spawn function
+                string model;
+            </xmp>
+            The name of the file that contains the entity model.
+            <xmp>
+                float frame;
+            </xmp>
+            This is the index of the currently displayed model frame. Frames must be
+            defined by a $frame construct in the model file, and manipulated in the
+            code as $xxx (where xxx is the name of the frame).
+            <xmp>
+                float skin;
+            </xmp>
+            This is the index of the model skin currently displayed. If your model
+            has more than one skin defined, then this value indicates the skin in use.
+            You can change it freely, as long as it remains in a valid range. For
+            instance, it's used by the armor model to show the yellow, red or green skin.
+            <xmp>
+                float effects;
+            </xmp>
+            This is a flag that defines the special light effects that the entity is
+            subject to. This can supposedly be used to make an entity glow, or to create
+            a glowing field of dots around it.<br>
+            <br>
+            <br>
+
+        </dd>
+        <dt><b>Position in 3D</b>
+        </dt>
+        <dd>
+            <xmp>
+                vector origin; // position of model
+                // origin_x, origin_y, origin_z
+                vector mins; // bounding box extents reletive to origin
+                // mins_x, mins_y, mins_z
+                vector maxs; // bounding box extents reletive to origin
+                // maxs_x, maxs_y, maxs_z
+                vector size; // maxs - mins
+                // size_x,size_y,size_z
+                vector absmin; // origin + mins and maxs
+                // absmin_x absmin_y absmin_z
+                vector absmax; // origin + mins and maxs
+                // absmax_x absmax_y absmax_z
+                vector oldorigin; // old position
+                vector angles; // = 'pitch_angle yaw_angle flip_angle'
+            </xmp>
+            Quirks: setting the angles on a player entity doesn't work.<br>
+            <br>
+            <br>
+
+
+
+        </dd>
+        <dt><b>Situation of the entity</b>
+        </dt>
+        <dd>
+            <xmp>
+                float waterlevel; // 0 = not in water, 1 = feet,
+                // 2 = waist, 3 = eyes
+                float watertype; // a content value
+                entity groundentity; // indicates that the entity
+                // moves on the ground
+            </xmp>
+            Since groundentity is used nowhere in progs, it's meaning is just a wild
+            guess from a similar field in messages.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Movement in 3D</b>
+        </dt>
+        <dd>
+            <xmp>
+                vector velocity; // = 'speed_x, speed_y, speed_z'
+                vector avelocity; // = 'pitch_speed yaw_speed 0',
+                // angle velocity
+                vector punchangle; // temp angle adjust from damage
+                // or recoil
+                float movetype; // type of movement
+                float yaw_speed; // rotation speed
+                float solid; // tell if entity can block the
+                // movements.
+            </xmp>
+            <br>
+
+        </dd>
+        <dt><b>Monster's Behavior</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity goalentity; // Monster's movetarget or enemy
+                float ideal_yaw; // Monster's ideal direction, on paths
+                float yaw_speed; // Monster's yaw speed.
+                string target; // Target of a monster
+                string targetname; // name of the target
+            </xmp>
+            <br>
+
+
+
+        </dd>
+        <dt><b>Automatic Behavior</b>
+        </dt>
+        <dd>
+            <xmp>
+                float nextthink; // next time when entity must act
+                void() think; // function invoked when entity
+                // must act
+                void() touch; // function invoked if entity is
+                touched
+                void() use; // function invoked if entity is
+                // used
+                void() blocked; // function for doors or plats,
+                // called when can't push
+
+                // ### RWA, addition ###
+                entity other; // entity that triggered event on
+                // 'self'
+
+                vector movedir; // mostly for doors, but also used
+                // for waterjump
+                string message; // trigger messages
+                float sounds; // either a cd track number or sound
+                // number
+                string noise; // sound played on entity noise
+                // channel 1
+                string noise1; // ...
+                string noise2;
+                string noise3;
+            </xmp>
+            <i>Information by Abducted :</i><br>
+            When you want an entity to do something specific, after a certain delay
+            (exploding, disapearing, or the like...), you set next thing to that delay
+            (in seconds), and set think to the function to execute.<br>
+            <br>
+            <i>Information by Greg Lewis :</i><br>
+            It seems that the touch function is called before the field is checked,
+            so you can set this type in the touch function, and it will immediatly
+            be taken into account.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Player/Monster stats and damage status</b>
+        </dt>
+        <dd>
+            <xmp>
+                float deadflag; // tells if an entity is dead.
+                float health; // health level
+                float max_health; // players maximum health is
+                // stored here
+                float takedamage; // indicates if entity can be
+                // damaged
+                float dmg_take; // damage is accumulated through
+                // a frame. and sent as one single
+                float dmg_save; // message, so the super shotgun
+                // doesn't generate huge messages
+                entity dmg_inflictor; // entity that inflicted the damage
+                // (player, monster, missile, door)
+            </xmp>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Player inventory</b>
+        </dt>
+        <dd>
+            <xmp>
+                float items; // bit flags
+                float armortype; // fraction of damage absorbed by armor
+                float armorvalue; // armor level
+                float weapon; // one of the IT_SHOTGUN, etc flags
+                string weaponmodel; // entity model for weapon
+                float weaponframe; // frame for weapon model
+                float currentammo; // ammo for current weapon
+                float ammo_shells; // remaining shells
+                float ammo_nails; // remaining nails
+                float ammo_rockets; // remaining rockets and grenades
+                float ammo_cells; // remaining lightning bolts
+                float impulse; // weapon changes
+            </xmp>
+            When set to 0, the player's weapon doesn't change. When different from zero,
+            this field is interpreted by the Quake-C<br>
+            impulse command as a request to change weapon (see ImpulseCommand).<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Player Fight</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity owner; // Entity that owns this one (missiles,
+                // bubbles are owned by the player)
+                entity enemy; // personal enemy (only for monster entities)
+                float button0; // fire
+                float button1; // use
+                float button2; // jump
+
+                vector view_ofs; // position of player eye, relative to origin
+
+                float fixangle; // set to 1 if you want angles to change now
+                vector v_angle; // view or targeting angle for players
+                float idealpitch; // calculated pitch angle for lookup up slopes
+                entity aiment; // aimed antity?
+            </xmp>
+            <br>
+
+
+        </dd>
+        <dt><b>Deathmatch</b>
+        </dt>
+        <dd>
+            <xmp>
+                float frags; // number of frags
+                string netname; // name, in network play
+                float colormap; // colors of shirt and pants
+                float team; // team number
+                float flags; // ?
+            </xmp>
+            <br>
+
+
+        </dd>
+        <dt><b>Fields used only by Quake-C (User defined)</b>
+            <br>
+        </dt>
+        <dd>
+            These entity fields are used only by Quake-C programs, and are never
+            referenced by the C code of Quake.exe. So you can do whatever you want
+            with the values, so long as it's compatible with what other Quake-C modules
+            do.<br>
+            <br>
+            If the fields defined here are not suitable for you, you can define new
+            fields, by adding them at the end of the defintion of fields. As a matter
+            of fact, the number of fields in an entity (hence the size of all the
+            instances of entity objects) is determined by Quake-C: in the PROGS.DAT
+            header, a value named entityfields indicates to Quake.exe the size of the
+            entity object.<br>
+            <br>
+            Beware however that the more field you add, the more each entity will suck
+            memory. Add just one float (4 bytes) and it will take, in memory, 4 bytes
+            time the number of entity.<br>
+            <br>
+            The best is to share fields between distinct classes of entities, by reusing
+            the same position for another kind of field. If the Quake C Compiler was a
+            real object-oriented compiler, that would be done very safely by
+            single-inheritance (multiple-inheritance would be a deadly mistake). You will
+            also notice that id software has made quite a lousy usage of most of the fields,
+            defining much more than were actually needed, since they are only used by a few
+            entities.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>World fields</b>
+        </dt>
+        <dd>
+            <xmp>
+                string wad; // name of WAD file
+                // with misc graphics
+                string map; // name of the map being
+                // played
+                float worldtype; // see below
+            </xmp>
+            worldtype is 0 for a medieval setting, 1 for metal, and 2 for a base setting.<br>
+            These fields might soon become global variables, so don't rely too much on them.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Quake Ed fields</b>
+        </dt>
+        <dd>
+            <xmp>
+                string killtarget;
+                float light_lev; // not used by game, but
+                // parsed by light util
+                float style;
+            </xmp>
+            <br>
+
+
+        </dd>
+        <dt><b>Monster Behaviour</b>
+        </dt>
+        <dd>Those functions are called when these specific events happen :
+            <xmp>
+                void() th_stand; // when stands iddle
+                void() th_walk; // when is walking
+                void() th_run; // when is running
+                void() th_missile; // when a missile comes
+                void() th_melee; // when fighting in melee
+                void() th_die; // when dies
+
+                void(entity attacker, float damage) th_pain;
+            </xmp>
+            That function is executed when the monster takes a certain amount of damage
+            from an attacker (a player, or another monster). Will usually cause the
+            monster to turn against the attacker.<br>
+            <br>
+            <br>
+
+
+        </dd>
+        <dt><b>Monster state variables</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity oldenemy; // mad at this player before
+                // taking damage
+                float speed;
+                float lefty;
+                float search_time;
+                float attack_state;
+
+                float pausetime;
+                entity movetarget;
+
+                Player Only
+
+                float walkframe;
+                float attack_finished;
+                float pain_finished; // time when pain sound
+                // is finished
+                float invincible_finished;
+                float invisible_finished;
+                float super_damage_finished;
+                float radsuit_finished;
+                float invincible_time; // time when player cease
+                // to be invincible
+                float invincible_sound;
+                float invisible_time; // time when player cease
+                // to be invisible
+                float invisible_sound;
+                float super_time; // time when quad shot expires?
+                float super_sound;
+                float rad_time;
+                float fly_sound;
+                float axhitme; // TRUE if hit by axe
+                float show_hostile; // set to time+0.2 whenever a
+                // client fires a weapon or
+                // takes damage. Used to alert.
+                // monsters that otherwise would
+                // let the player go
+                float jump_flag; // player jump flag
+                float swim_flag; // player swimming sound flag
+                float air_finished; // when time &gt; air_finished, start
+                // drowning
+                float bubble_count; // keeps track of the number of bubbles
+                string deathtype; // keeps track of how the player died
+            </xmp><br>
+
+
+        </dd>
+        <dt><b>Object stuff</b>
+        </dt>
+        <dd>
+            <xmp>
+                string mdl; // model name?
+                vector mangle; // angle at start. 'pitch roll yaw'
+                vector oldorigin; // only used by secret door
+                float t_length;
+                float t_width;
+            </xmp><br>
+
+
+        </dd>
+        <dt><b>Doors</b>
+        </dt>
+        <dd>
+            <xmp>
+                vector dest;
+                vector dest1;
+                vector dest2;
+                float wait; // time from firing to restarting
+                float delay; // time from activation to firing
+                entity trigger_field; // door's trigger entity
+                string noise4;
+                float aflag;
+                float dmg; // damage done by door when hit
+            </xmp><br>
+
+
+        </dd>
+        <dt><b>Miscellaneous</b>
+        </dt>
+        <dd>
+            <xmp>
+                float cnt; // counter
+                void() think1;
+                vector finaldest;
+                vector finalangle;
+                //
+                // triggers
+                //
+                float count; // for counting triggers
+                //
+                // plats / doors / buttons
+                //
+                float lip;
+                float state;
+                vector pos1;
+                vector pos2; // top and bottom positions
+                float height;
+                //
+                // sounds
+                //
+                float waitmin;
+                float waitmax;
+                float distance;
+                float volume;
+            </xmp><br>
+        </dd>
+    </dl>
+    <br>
+    <hr>
+    <br>
+
+
+
+
+
+
+
+    <u>
+        <h2><a name="Global_variables">6. Global variables</a></h2>
+    </u><br>
+
+    These variables are accessible in every functions.<br>
+    Quake C function are not supposed to modify them directly.<br>
+
+    <dl compact="compact">
+        <dt><b>Variable : world</b>
+        </dt>
+        <dd>
+            the server's world object, which holds all global state for the server,
+            like the deathmatch flags and the body ques.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : time</b>
+        </dt>
+        <dd>
+            <xmp>
+                float time; // in seconds
+            </xmp>
+            The current game time, a floating point value in seconds. Note that because the entities in the world are
+            simulated
+            sequentially, time is NOT strictly increasing. An impact late in one entity's time slice may set time higher
+            than the think
+            function of the next entity. The difference is limited to 0.1 seconds.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : frametime</b>
+        </dt>
+        <dd>
+            <xmp>
+                float frametime; // in seconds
+            </xmp>
+            No idea what this can be. Used only when jumping in water.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : self</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity self;
+            </xmp>
+            The entity that is subject to the current function.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : other</b>
+        </dt>
+        <dd>
+            <xmp>
+                entity other;
+            </xmp>
+            The object concerned by an impact, not used for thinks.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : force_retouch</b>
+        </dt>
+        <dd>
+            <xmp>
+                float force_retouch; // counter
+            </xmp>
+            Force all entities to touch triggers next frame. this is needed because
+            non-moving things don't normally scan for triggers, and when a trigger
+            is created (like a teleport trigger), it needs to catch everything.<br>
+            It is decremented each frame, so it is usually set to 2 to guarantee
+            everything is touched.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : mapname</b>
+        </dt>
+        <dd>
+            <xmp>
+                string mapname;
+            </xmp>
+            Name of the level map currently being played, like "start".<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : deathmatch</b>
+        </dt>
+        <dd>
+            <xmp>
+                float deathmatch; // a boolean value, 0 or 1
+            </xmp>
+            True if playing deathmatch.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : coop</b>
+        </dt>
+        <dd>
+            <xmp>
+                float coop; // a boolean value, 0 or 1
+            </xmp>
+            True if playing cooperative.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : teamplay</b>
+        </dt>
+        <dd>
+            <xmp>
+                float teamplay; // a boolean value, 0 or 1
+            </xmp>
+            True if playing by teams.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : serverflags</b>
+        </dt>
+        <dd>
+            <xmp>
+                float serverflags; // bit fields
+            </xmp>
+            Propagated from level to level, and used to keep track of the completed
+            episodes. If serverflag &amp; ( 1 &lt;&lt; e) is true, then episode e
+            was already completed. Generally equal to player.spawnflags &amp; 15.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : total_secrets</b>
+        </dt>
+        <dd>
+            <xmp>
+                float total_secrets; // counter
+            </xmp>
+            Number of secrets found by the players. Affected only by trigger_secret.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : found_secrets</b>
+        </dt>
+        <dd>
+            <xmp>
+                float found_secrets; // counter
+            </xmp>
+            Number of secrets found.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : total_monsters</b>
+        </dt>
+        <dd>
+            <xmp>
+                float total_monsters; // counter
+            </xmp>
+            Total number of monsters that were spawned, since the begining of the level.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : killed_monsters</b>
+        </dt>
+        <dd>
+            <xmp>
+                float killed_monsters; // counter
+            </xmp>
+            Store the total number of monsters killed.<br>
+            <br>
+
+        </dd>
+        <dt><b>Variable : parm1...parm16</b>
+        </dt>
+        <dd>
+            <xmp>
+                float parm1; // items bit flag (IT_SHOTGUN | IT_AXE )
+                float parm2; // health
+                float parm3; // armorvalue
+                float parm4, parm5, parm6, parm7; // ammo
+                float parm8; // weapon
+                float parm9; // armortype*100
+                float parm10, parm11, parm12, parm13, parm14, parm15, parm16;
+            </xmp>
+            Those parameters seem to be a bit of hack. They are used when a
+            client connects. Spawnparms are used to encode information about
+            clients across server level changes.<br>
+            <br>
+        </dd>
+    </dl>
+    <br><br>
+
+    <h3><b>Functions that are mandatory in Quake-C</b></h3>
+
+    These functions must be defined in Quake C, since they are invoked by
+    Quake under certain conditions.
+
+    <dl compact="compact">
+        <dt><b>Misc</b>
+        </dt>
+        <dd>
+            <xmp>
+                void main();
+            </xmp>
+            Only used for testing progs.<br>
+            <br>
+
+        </dd>
+        <dd>
+            <xmp>
+                void StartFrame();
+            </xmp>
+            Called at the start of each frame.<br>
+            <br>
+
+        </dd>
+        <dt><b>Behavior of players</b>
+        </dt>
+        <dd>
+            <xmp>
+                void PlayerPreThink();
+            </xmp>
+            Called with self=player, for every frame, before physics are run.
+
+        </dd>
+        <dd>
+            <xmp>
+                void PlayerPostThink();
+            </xmp>
+            Called with self=player, for every frame, after physics are run.<br>
+            <br>
+
+        </dd>
+        <dt><b>Management of network game clients</b>
+
+        </dt>
+        <dd>
+            <xmp>
+                void ClientKill();
+            </xmp>
+            Called when a player suicides.
+
+        </dd>
+        <dd>
+            <xmp>
+                void ClientConnect();
+            </xmp>
+            Called when a player connects to a server, but also, for every player,
+            when a new level starts. It is used to announces the new player to every
+            other players.<br>
+
+        </dd>
+        <dd>
+            <xmp>
+                void PutClientInServer();
+            </xmp>
+            Call after setting the parm1... parm16.
+
+        </dd>
+        <dd>
+            <xmp>
+                void ClientDisconnect();
+            </xmp>
+            Called when a player disconnects from a server Announce that the player
+            has left the game.
+
+        </dd>
+        <dd>
+            <xmp>
+                void SetNewParms();
+            </xmp>
+            Called when a client first connects to a server. Sets parm1...parm16 so
+            that they can be saved off for restarts.
+
+        </dd>
+        <dd>
+            <xmp>
+                void SetChangeParms();
+            </xmp>
+            Call to set parms for self so they can?
+        </dd>
+    </dl>
+    <br>
+    <hr>
+    <br>
+
+
+
+
+
+
+
+
+    <u></u>
+    <h2><u><a name="Model_pragma">7. Model pragma</a></u></h2>
+    <a name="Model_pragma"><i>(Derived from informations published by Steve Tietze)</i><br>
+        <br>
+        Here are a few definitions that are commonly found in the Quake-C code
+        defining the behavior of animated models (monsters, players, etc...).<br>
+        <br>
+        Most of this information is not interpreted by the Quake-C compiler, but
+        it's useful for the program modelgen that generates the models.
+
+    </a>
+    <dl compact="compact">
+        <dt><a name="Model_pragma"><b>Model name</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $modelname name
+            </xmp>
+            <a name="Model_pragma">name is the name of the model file defining the object.<br>
+                ex: <tt>$name armor</tt><br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>directory</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $cd dir
+            </xmp>
+            <a name="Model_pragma">Specify the directory where your model file (.MDL) is located.<br>
+                ex: <tt>$cd /evil/models/armor</tt><br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Special animation flags</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $flags rotation
+            </xmp>
+            <a name="Model_pragma"><i>This field is not interpreted by Quake-C, but it's useful for the program
+                    modelgen that generates the models.</i><br>
+                Rotation of the object.<br>
+                ex: <tt>$flags 8</tt><br>
+                Possible values for the flags : 8, the object keeps rotating, like armors.<br>
+                Other values are not known yet.<br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Origin</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $origin x y z
+            </xmp>
+            <a name="Model_pragma"><i>This field is not interpreted by Quake-C, but it's useful for the
+                    program modelgen that generates the models.</i>
+                Location of the object within the bounding box, in the quake editor.<br>
+                ex: <tt>$origin 0 0 8</tt><br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Scale factor</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $scale number
+            </xmp>
+            <a name="Model_pragma"><i>This field is not interpreted by Quake-C, but it's useful for the program
+                    modelgen that generates the models.</i>
+                Number comes from the texmake number that is generated.<br>
+                You can use different values if you want.<br>
+                ex: <tt>$scale 4</tt><br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Base</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $base object
+            </xmp>
+            <a name="Model_pragma"><i>This field is not interpreted by Quake-C, but it's useful for the program
+                    modelgen that generates the models.</i>
+                Object is the name of a model file, that will be used as a kind of starting
+                position, for animation.<br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Skin file</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $skin skinfile
+            </xmp>
+            <a name="Model_pragma"><i>This field is not interpreted by Quake-C, but it's useful for the program
+                    modelgen that generates the models.</i>
+                Skinfile is the name (without extension) of the .lbm file that defines the
+                skin of the object, as generated by the program texmake.<br>
+                <br>
+
+            </a>
+        </dd>
+        <dt><a name="Model_pragma"><b>Frame definitions</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                $frame frame1 frame2 ...
+            </xmp>
+            <a name="Model_pragma">This defines several animation frames of the object.<br>
+                For every animation frame defined, you must also define a Quake-C
+                function, that will be called during this animation frame. For instance :
+                <xmp>
+                    $frame walk1 walk2 walk3 walk4
+                    void() man_walk1 = [ $walk1, man_walk2 ] { ... some code ... };
+                    void() man_walk2 = [ $walk2, man_walk3 ] { ... some code ... };
+                    void() man_walk3 = [ $walk3, man_walk4 ] { ... some code ... };
+                    void() man_walk4 = [ $walk4, man_walk1 ] { ... some code ... };
+                </xmp>
+                In the brackets, the first parameter defines the name of the frame
+                (as found in the model file), and the second parameter defined the
+                function that is to be executed in the next frame (by setting the value
+                of self.nextthink).<br>
+                <br>
+            </a>
+        </dd>
+    </dl>
+
+    <a name="Model_pragma">Most of these functions do nothing special, but some can be very
+        complex (for instance, the functions that are called when the monster
+        tries to see a player).<br>
+        <br>
+    </a>
+    <hr>
+    <a name="Model_pragma"><br>
+
+
+
+
+
+
+
+
+
+        <u></u></a>
+    <h2><a name="Network_protocol"><u>8. Network protocol</u></a></h2><a name="Network_protocol"><br>
+
+        Quake-C is not supposed to handle a lot of network messages, since most
+        are already handled in C.<br>
+        <br>
+        However, builtin functions have not been built for every kind of
+        messages in the Quake protocol, so you migth end-up composing protocol
+        messages in Quake-C. I highly recommend that you build a single
+        function to handle a given message type, because the structure of those
+        messages might change, and then all your code would have to be checked
+        for bugs.<br>
+        <br>
+        By that way, </a><a href="http://www.idsoftware.com/">Id Software</a> didn't
+    even bothered to write a function to generate temporary entites, though
+    they keep using this message. It's still a long way to ISO 9001,
+    I'm afraid.<br>
+    <br>
+
+    <h4><big>Definitions related to protocol messages</big></h4>
+
+    <dl compact="compact">
+        <dt><b>Values : How messages are sent</b>
+        </dt>
+        <dd>
+            <xmp>
+                MSG_BROADCAST = 0; // unreliable message, sent to all
+                MSG_ONE = 1; // reliable message, sent to msg_entity
+                MSG_ALL = 2; // reliable message, sent to all
+                MSG_INIT = 3; // write to the init string
+            </xmp>
+            Use unreliable (but fast) messages, when it's of no importance that a
+            client misses the message.<br>
+            Examples : sound, explosions, monster deaths, taunts....<br>
+            Use reliable messages when it's very important that every client sees
+            the message, or a game incoherency might happen.<br>
+            Examples : shots, player deaths, door moves, game ends ... and CD
+            track changes!.<br>
+            <br>
+
+        </dd>
+        <dt><b>Values: Type of message</b>
+        </dt>
+        <dd>
+            These are some of message types defined in the Quake network protocol.<br>
+            <xmp>
+                SVC_SETVIEWPORT = 5;
+                SVC_SETANGLES = 10;
+                SVC_TEMPENTITY = 23;
+                SVC_KILLEDMONSTER = 27;
+                SVC_FOUNDSECRET = 28;
+                SVC_INTERMISSION = 30;
+                SVC_FINALE = 31;
+                SVC_CDTRACK = 32;
+                SVC_SELLSCREEN = 33;
+                SVC_UPDATE = 128;
+            </xmp>
+        </dd>
+    </dl>
+    <br>
+
+    <h4><big>Some message structures</big></h4>
+
+    Here are some of the messages defined in the Quake network protocol.<br>
+    Beware, the structure of those messages might change in future
+    version (Satan forbids!).<br>
+    <br><br>
+
+    <dl compact="compact">
+        <dt><b>Message : Set View Position</b>
+        </dt>
+        <dd>
+            <xmp>
+                msg_entity = player
+                WriteByte (MSG_ONE, SVC_SETVIEWPORT);
+                WriteEntity( MSG_ONE, camera);
+            </xmp>
+            This message is meant for a single client player. It sets the view
+            position to the position of the entity camera.<br>
+            <br>
+
+        </dd>
+        <dt><b>Message : Set View Angles</b>
+            <xmp>
+                msg_entity = player
+                WriteByte (MSG_ONE, SVC_SETVIEWANGLES);
+                WriteAngle( MSG_ONE, camera.angles_x);
+                WriteAngle( MSG_ONE, camera.angles_y);
+                WriteAngle( MSG_ONE, camera.angles_z);
+            </xmp>
+            This message is meant for a single client player. It set the
+            orientation of it's view to the same orientation than the entity
+            camera.<br>
+            <br>
+
+        </dt>
+        <dt><b>Message : Temporary Entity</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+                WriteByte (MSG_BROADCAST, entityname);
+                WriteCoord (MSG_BROADCAST, origin_x);
+                WriteCoord (MSG_BROADCAST, origin_y);
+                WriteCoord (MSG_BROADCAST, origin_z);
+            </xmp>
+
+        </dd>
+        <dt><b>Message : Set CD Track</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_CDTRACK);
+                WriteByte (MSG_ALL, val1); // CD start track
+                WriteByte (MSG_ALL, val2); // CD end track
+            </xmp>
+
+        </dd>
+        <dt><b>Message : Final Message</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_FINALE);
+                WriteString (MSG_ALL, "any text you like\n");
+            </xmp>
+
+        </dd>
+        <dt><b>Message : Sell Screen</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_SELLSCREEN);
+            </xmp>
+            Shows the infamous sell screen (like you needed it to understand).<br>
+            <br>
+
+        </dd>
+        <dt><b>Message : Inter Mission</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_INTERMISSION);
+            </xmp>
+            Shows the inter mission camera view.<br>
+            <br>
+
+        </dd>
+        <dt><b>Message : Killed Monster</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_KILLEDMONSTER);
+            </xmp>
+            Increase by one the count of killed monsters, as available to the client.
+            Can be displayed with showscores.<br>
+            <br>
+
+        </dd>
+        <dt><b>Message : Found Secrets</b>
+        </dt>
+        <dd>
+            <xmp>
+                WriteByte (MSG_ALL, SVC_FOUNDSECRET);
+            </xmp>
+            Increase by one the count of secrets founds.<br>
+            <br>
+
+        </dd>
+        <dt><b>Message: Update Entity</b>
+        </dt>
+        <dd>
+            This message has a rather complex structure. I already generated some
+            valid update messages, but since the message structure seems highly
+            susceptible to change in the next versions of Quake, I would recommend
+            that you never use such messages : as a matter of fact, Quake itslef
+            is very capable of generating all the required messages... unless you
+            start creating deathmatch cameras or the like.<br>
+        </dd>
+    </dl>
+    <br>
+    <hr>
+    <br>
+
+
+
+
+
+
+
+
+    <u></u>
+    <h2><u><a name="Network_Builtin_functions">9. Network Builtin functions
+            </a></u></h2><a name="Network_Builtin_functions"><br>
+
+
+        <u>Beware :</u> when generating messages, you had better respect the format of
+        the existing messages. Otherwise the game clients might not be able to
+        interpret them (and will likely crash).<br>
+        <br>
+        The functions below all write to clients (players connected via the
+        network, or the local player).<br>
+        <br>
+        <br>
+
+    </a>
+    <h4><a name="Network_Builtin_functions"><big>Global variable for network messages</big></a></h4>
+
+    <dl compact="compact">
+        <dt><a name="Network_Builtin_functions"><b>Variable : msg_entity</b>
+            </a></dt>
+        <dd>
+            <xmp>
+                entity msg_entity;
+            </xmp>
+            <a name="Network_Builtin_functions"><i>If you want to send a message to just one entity e, then set
+                    msg_entity=
+                    e and send the message with flag MSG_ONE, instead of MSG_ALL.</i><br>
+                Never used. Maybe it doesn't even work.<br>
+            </a>
+        </dd>
+    </dl>
+    <a name="Network_Builtin_functions"><br>
+        <br>
+
+    </a>
+    <h4><a name="Network_Builtin_functions"><big>Builtin functions for composing network messages</big></a></h4>
+
+    <dir>
+        <a name="Network_Builtin_functions"><tt>Function : WriteByte<br>
+                <br>
+                void WriteByte(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            <br>
+            <tt>Function : WriteChar<br>
+                <br>
+                void WriteChar(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            <br>
+            <tt>Function : WriteShort<br>
+                <br>
+                void WriteShort(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            <br>
+            <tt>Function : WriteLong<br>
+                <br>
+                void WriteLong(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            <br>
+            <tt>Function : WriteCoord<br>
+                <br>
+                void WriteCoord(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            <br>
+            <tt>Function : WriteAngle<br>
+                <br>
+                void WriteAngle(float to, float value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            This function writes a single byte, that represents 256*(angle/380).<br>
+            <br>
+            <tt>Function : WriteString<br>
+                <br>
+                void WriteString(float to, string value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            This function writes a string, terminated by \0 (the null character in C).<br>
+            <br>
+            <tt>Function : WriteEntity<br>
+                <br>
+                void WriteEntity(float to, entity value)</tt><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            to = see messages<br>
+            This function writes an entity reference, taking two bytes.<br>
+        </a>
+    </dir>
+    <a name="Network_Builtin_functions"><br>
+    </a>
+    <hr>
+    <a name="Network_Builtin_functions"><br>
+        <br>
+
+
+
+
+
+
+        <u></u></a>
+    <h2><a name="Tips_&amp;_tricks"><u>10. Tips &amp; tricks</u></a></h2><a name="Tips_&amp;_tricks"><br>
+
+        Here are some characteristics of Quake-C that you had better be aware of.<br>
+    </a>
+    <dl compact="compact">
+        <dt><a name="Tips_&amp;_tricks"><b>The names of variable and functions must be unique.</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">The names of functions, variables and fields must be unique. For
+                instance, you cannot define a variable with the same name as a field.
+                However, local variables can be defined more than once (they had better!).<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>Composition of function is not supported</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">Since all the functions use a single parameter marshaling area,
+                and a single global variable to store their reture result, you
+                should NEVER try to call a function within another function call.<br>
+                Example : printing the coordinate of entity self
+                <xmp>
+                    sprintf(self, vtos( self.origin ));
+                </xmp>
+                will fail miserably (sending the message somewhere in hell), so it should
+                be replaced by :
+                <xmp>
+                    text = vtos( self.origin );
+                    sprintf(self, text);
+                </xmp>
+                Unfortunately, this also applies to operators :
+                <xmp>
+                    sum = anglestovec( 45) + anglestovec( 90);
+                </xmp>
+                will fail an should be replaced by :
+                <xmp>
+                    sum = anglestovec( 45);
+                    sum = sum + anglestovec( 90);
+                </xmp>
+                Actually, Quake-C is rather lame as a compiler, and you will probably
+                make hundred of little mistakes like that, that the compiler will not
+                warn you of. But remember Quake-C was built for "performance", not ease
+                of use. And also that it wasn't designed by people from the MIT.
+                Remember also that you got it for free... you can always get gcc (the
+                Gnu C Compiler) for the same price ;-)<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>You cannot initialise variable with default values.</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">If you give a default value to a quake-C variable, this variable
+                will be considered as a constant. And since the value of constants is
+                not supposed to change, your program may not work properly after that.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>Coordinates are relative to the world.</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">All the geometry (coordinate positions, directions, angles) are
+                relative to the world. They are never relative to a given
+                object. To know the direction an object is facing, you have to
+                require calculation of the v_front vector (respectively
+                v_right and v_up for the right, and the top).<br>
+            </a></dd>
+    </dl>
+    <a name="Tips_&amp;_tricks"><br><br>
+
+
+    </a>
+    <h4><a name="Tips_&amp;_tricks"><big>Frequently Asked Questions about Quake-C</big></a></h4>
+
+    <dl compact="compact">
+        <dt><a name="Tips_&amp;_tricks"><b>How do I change the viewpoint?</b><br>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">You would like that a given player sees through the eyes of
+                another entity. This commonly happens at the end of the level
+                (all players see through a camera), or when the player head is
+                severed (gibbed), or when a player is invisible (he only exists as
+                his eyes).<br>
+                <br>
+                But the example above work by changing the player entity, and what
+                you want is probably just to see through a camera (Duke3D) or a
+                missile (Descent).<br>
+                <br>
+                This operation is known in the Quake network protocol as a setview
+                message. But nowhere it's defined in Quake-C, and there's no function
+                to change the view port. So the solution is to encode a set view port
+                message, followed by a set view angles message (to take the orientation
+                of the camera).<br>
+                <br>
+                This works fine, except that if, for some reason, the entity you are
+                using as a camera was not previously declared to the client, then the
+                view port will be set to '0 0 0', which is usually somewhere in the
+                void.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How do I teleport a player into another server</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks"><i>A trick by Steven Lang (tiger@ecis.com)</i>
+                <xmp>
+                    // In the slipgate touch function
+                    // other = entity that touched
+                    if(other.classname == "player")
+                    stuffcmd(other, "connect server.address\n"); // send command
+                </xmp>
+                When the slipgate is touched, the entity jumps to another server.<br>
+                <br>
+                <u>Trouble :</u> the player stats and weapons won't be preserved, and
+                the player would be dumped to the console if the other server was
+                full or not available.<br>
+                That's why John Carmack, will rewrite the code of Quake.exe to implement
+                his Quake World proposal, and advanced server with all kinds of
+                goodies... permission lists, ability to block an IP, etc. (info from
+                quake-c list).<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How do I manipulate strings in Quake-C ?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">Well, you can have any kind of strings, as long as they cannot be
+                changed.<br>
+                <br>
+                "In Ford we trust" (Brave New World).<br>
+                <br>
+                Mind you, pr_comp.c, defines only operations = == != on strings.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How to read string variables, or text messages ?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">Well, if you know, tell, that would make a nice addition to this
+                specs.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How do I move an entity in Quake-C ?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">You have better not touch it's position, else some stuff in the C
+                code might not be valid anymore. So you call the setposition() built-in
+                function.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How to change the velocity of an entity (make it bounce off
+                    walls) ?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks"><i>Information by Greg Lewis.</i><br>
+                It seems that an entity's velocity can't be changed in the Touch function
+                of the entity.<br>
+                Making the calculations there will be of no use. So just set entity
+                .movetype to MOVETYPE_BOUNCE, entity.nextthink to 0.1 (to let it bounce
+                off), and set entity.think to the name of a function that, when called
+                0.1 second later, will set entity.velocity to the right direction.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How to calculate the direction a player is facing?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">Assuming the player is self, the entity field self.angles contains the
+                orientation angles of
+                the player (as set by moving the mouse).<br>
+                <br>
+                Then the function makeverctors( self.angles) will calculate three vectors, that point in the
+                direction the player is facing, but also to the right of the player (strafing direction)
+                and to the direction the player is standing.<br>
+                <br>
+                Note that those vectors are normalised to 1, so if you want to know what lays 100 units in
+                front of the player, use self.origin + 100 * facing.<br>
+                <br>
+            </a></dd>
+        <dt><a name="Tips_&amp;_tricks"><b>How to send a message to a client when he logs in ?</b>
+            </a></dt>
+        <dd><a name="Tips_&amp;_tricks">It has been noticed that using a sprint() in function ClientConnect just plain
+                doesn't send any message at all. Maybe the client is not ready to receive messages
+                at this point.<br>
+                <br>
+                However, </a><a href="mailto:doug.keegan@tamu.edu">Doug Keenan</a> has reported he could send
+            such a text message by putting the sprint() close to the begining of the ClientConnect
+            function. It doesn't work at the end, apparently.<br>
+        </dd>
+    </dl>
+    <br><br>
+
+    <h4><big>Writing Quake-C code</big></h4>
+    <br>
+    Here are some suggestions that you should really consider when writing Quake-C code. Well,
+    there are no obligations, but that would make life simpler for others when they read your code
+    (and thus for you when you read theirs).<br>
+    <br>
+    I assume here that you want to develop code that others can re-use, or that can be mixed
+    seamlessly with codes written by others.<br>
+    <br>
+    (If you are reinventing the whole world all by yourself, you hardly need any help or counsels.
+    By the way, the first command is +light).<br>
+    <br>
+
+    <dl compact="compact">
+        <dt><b>1. Please put comments in your code</b><br>
+        </dt>
+        <dd>Of course, the real gurus don't need comments. They understand raw Quake-C, even
+            compiled. They can even imagine all the parts of your code before they read them.
+            Even before you write them. But actually, they seldom read your code. Only normal people
+            do.<br>
+            <br>
+        </dd>
+        <dt><b>2. Please tag the begining and end of your modifications, if you are fixing a code from someone
+                else</b><br>
+        </dt>
+        <dd>Also put a date, and put a reason for the fix.<br>
+            Example :
+            <xmp>
+                // Patch by Nezu The Unworthy 8/3/96
+                // Gimme a chance to win a deathmatch
+                if(self.name != "nezu")
+                self.frag = self.frag - 10;
+                // Patch End
+            </xmp>
+        </dd>
+        <dt><b>3. Creating new elements</b><br>
+        </dt>
+        <dd>Each time you create a new function, a new variable or a new field, please give
+            it a name that will not conflict with function or variable defined by others.<br>
+            A rather sure way to do this is to prefix every name with some abvreviated module name,
+            or you initials, or whatever rare combination of three or four letter.<br>
+            Example :
+            <xmp>
+                void() NTU_think = // Nezu The Unworthy starts thinking
+                {
+                self.skin = 1; // turn red and boil
+                };
+            </xmp>
+
+        </dd>
+        <dt><b>4. Implementing new functions</b><br>
+        </dt>
+        <dd>Each time you implement some set of related functions, you should create a new
+            Quake-C module, and give it a name different from the existing ones. <br>
+            Please do not use one of the module names used by <a
+                href="http://members.fortunecity.com/kwarenda/www.idsofware.com">Id
+                Software</a>, this would be confusing. Try to be original, else we might end-up with
+            two hundred modules called impulse.qc.<br>
+            <br>
+
+        </dd>
+        <dt><b>5. When you want to distribute some modified Quake-C programs :</b><br>
+        </dt>
+        <dd>Include a file_id.diz file explaining in 5 lines what your patch does, and where it
+            should be stored in the archives (this file is to be read by system administrators).<br>
+            Include a readme.txt file explaining in details what your patch does, how it does it,
+            and what common files you had to modify.<br>
+            Include the .qc modules that you created from scratch.<br>
+            For the modules you modified, please let them pass through the utilities diff (see below),
+            so that the original file can be patched the utility patch. Even if it has been modified
+            since. Do not distribute modified .qc modules. Future versions of Quake will contain
+            different code, and all your work would then be lost.<br>
+            <br>
+
+        </dd>
+        <dt><b>6. Compile and distribute</b><br>
+        </dt>
+        <dd>You should compile and distribute a version of your code, as a single <tt>PROGS.DAT</tt>
+            file, to be used by those who just wanna have fun. Don't forget them, they largely overnumber
+            the people who directly deal with Quake-C.<br>
+            <br>
+
+        </dd>
+        <dt><b>7. Upload your Quake-C patches to the primary quake ftp site at ftp.cdrom.com</b><br>
+        </dt>
+        <dd>Maybe if it's good enough it will also appear in the Quake-C code repository.<br>
+        </dd>
+    </dl>
+    <br>
+    <br>
+
+    <h4><big>Using Diff and Patch</big></h4>
+    <i>Information by <a href="mailto:jepler@cse.unl.edu">Jeff Epler</a></i><br>
+    <br>
+    You can find a DOS version of diff and patch on all the major ftp archives, for instance
+    Simtelnet (mirrored at <a href="ftp://oak.oakland.edu/pub/simtelnet">
+        ftp://oak.oakland.edu/pub/simtelnet</a>).<br>
+    <br>
+    For a Win32 (Windows95 and NT) version, see diffutils.zip and patch.zip.<br>
+    <br>
+    The full documentation for diff and patch is available on <a href="http://www.ai.mit.edu/">
+        http://www.ai.mit.edu</a>, but here are some shortened instructions :<br>
+    <br>
+    <dl compact="compact">
+        <dt><b>To make a diff :</b>
+        </dt>
+        <dd>
+            <ul>
+                <li>Start with yourdir/ with an entire working set of .qc files, and v101qc/
+                    with the virgin qc files from <a href="hhtp://www.idsoftware.com">Id Software</a>,</li>
+                <li><tt>diff -ur --new-file v101qc yourdir &gt; patchfil</tt></li>
+            </ul><br>
+
+        </dd>
+        <dt><b>To patch with a diff :</b>
+        </dt>
+        <dd>
+            <ul>
+                <li>Copy everything in v101qc (or yourdir if you want to add these patches to
+                    your already-customized setup) to newdir,</li>
+                <li>Change to newdir</li>
+                <li>Patch -p1 &lt; patchfil</li>
+                <li>Look for any "rejected" patches and apply them by hand using your favorite 2-window
+                    text editor. These should be few or none if the author kept his changes well-structured
+                    or you patched from exactly the same source he diffed from.</li>
+            </ul>
+        </dd>
+    </dl>
+    <hr>
+    <br>
+    <br>
+
+
+
+
+
+
+
+
+    <u></u>
+    <h2><u><a name="Basic_Types">11. Basic Types</a></u></h2><a name="Basic_Types"><br>
+
+
+    </a>
+    <h4><a name="Basic_Types"><big>Simple Types</big></a></h4>
+
+    <dl compact="compact">
+        <dt><a name="Basic_Types"><b>Type : void</b>
+            </a></dt>
+        <dd><a name="Basic_Types">An empty result, mostly used for definition of procedures (i.e. functions that return
+                no result at all).<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Basic_Types"><b>Type : float</b>
+            </a></dt>
+        <dd><a name="Basic_Types">A floating point value.<br>
+                <br>
+                Floats are also used to store booleans (TRUE, FALSE) or integer values linke counters,
+                or bit flags.
+                <xmp>
+                    Valid syntax: 12 1.6 0.5 -100
+                    Invalid syntax: .5
+                </xmp>
+                A parsing ambiguity is present with negative constants. "<tt>a-5</tt>" will be parsed
+                as "<tt>a</tt>", then "<tt>-5</tt>", causing an error. Separate the - from the digits
+                with a space "<tt>a - 5</tt>" to get the proper behavior.<br>
+                <br>
+            </a></dd>
+        <dt><a name="Basic_Types"><b>Type : vector</b>
+            </a></dt>
+        <dd><a name="Basic_Types">A vector, made of 3 float coordinates.<br>
+                Used to represent positions or directions in 3D space.<br>
+                Valid syntax : '0 0 0' or '20.5 -10 0.00001'<br>
+                <br>
+                Note the simple quotes around the vector. Do not use double quotes, they are reserved
+                for strings.<br>
+                <br>
+                If you declare a vector foobar, then you can access it's x, y and z fields with :
+                <tt>foobar_x</tt>, <tt>foobar_y</tt>, <tt>foobar_z</tt>.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Basic_Types"><b>Type : string</b>
+            </a></dt>
+        <dd><a name="Basic_Types">Represents a character string.<br>
+                Used to indicate file names, or messages to be broadcast to players.<br>
+                Valid syntax: "<tt>maps/jrwiz1.bsp</tt>" or "<tt>ouch!\n</tt>".<br>
+                Use \n for newline.<br>
+                <br>
+
+            </a></dd>
+        <dt><a name="Basic_Types"><b>Type : entity</b>
+            </a></dt>
+        <dd><a name="Basic_Types">The reference of an entity in the game, like things, players, monsters.<br>
+                For instance, this is the type of the entities self and other.<br>
+                <br>
+                The entity type is a structured type, made of fields.<br>
+                A description of each field is available.<br>
+            </a></dd>
+    </dl>
+    <a name="Basic_Types"><br>
+
+
+    </a>
+    <h4><a name="Basic_Types"><big>Field types</big></a></h4>
+
+    <a name="Basic_Types">Countrary to the other types, the entity type is a reference to an instance of a
+        structured object, that contains many informations of totally different kinds.<br>
+        <br>
+        To access all these informations conveniently, they are stored as fields of the entity
+        object, and each field is given a name and a type, that makes it distinct of the others.<br>
+        <br>
+        Some of the fields do not store value, but instead they store the function to be
+        executed in certain conditions. They are called the methods that can be aplied to the
+        object.<br>
+        <br>
+        If Quake-C was an object oriented programming language, those method functions and would
+        be distinguished from the other fields. And, above all, you would be able to create new
+        object types, with their own fields.<br>
+        <br>
+        As Quake-C stands currently, all the field definitions are definitions of entity fields.
+        So anywhere in your code you could add definition of new fields, and the compiler would
+        interpret them as an extension of the entity definition.<br>
+        <br>
+        Here are all the possible definitions of entity fields, with their types :
+        <tt>
+        </tt></a>
+    <ul>
+        <li><a name="Basic_Types"><tt>float field_name;
+                </tt></a></li>
+        <li><a name="Basic_Types"><tt>string field_name;
+                </tt></a></li>
+        <li><a name="Basic_Types"><tt>vector field_name;
+                </tt></a></li>
+        <li><a name="Basic_Types"><tt>entity field_name;
+                </tt></a></li>
+    </ul>
+
+    <a name="Basic_Types">Reserved field types (beware of the hack!)<br>
+        <br>
+        In the first file read by the Quake-C compiler, defs.qc, there must be a definition for the
+        entity fields, and world fields. This definition is hard coded. You had better not touch it,
+        or you will have to recompile Quake itself.<br>
+        <br>
+        The globals are defined before the special definition <tt>void end_sys_globals;</tt>. The
+        entity fields are defined before the special definition <tt>void end_sys_fields;</tt>.<br>
+        <br>
+        It's not important if you don't understand the nonsense above. It's an ugly hack. Just
+        don't modify defs.qc before those two tags, and you won't be in trouble.<br>
+        <br>
+    </a>
+    <hr>
+    <a name="Basic_Types"><br>
+        <br>
+
+
+
+
+
+
+
+
+
+
+        <u></u></a>
+    <h2><a name="Compilation_of_Quake-C"><u>12. Compilation of Quake-C</u></a></h2><a name="Compilation_of_Quake-C"><br>
+
+        The language is strongly typed and there are no casts.<br>
+        <br>
+        Source files are processed sequentially without dumping any state, so if a defs file
+        is the first one processed, the definitions will be available to all other files.<br>
+        <br>
+        Error recovery during compilation is minimal. It will skip to the next global
+        definition, so you will never see more than one error at a time in a given function.
+        All compilation aborts after ten error messages.<br>
+        <br>
+        Names can be defined multiple times until they are defined with an initialization,
+        allowing functions to be prototyped before their definition.
+        <xmp>
+            // in headers
+            void() MyFunction; // the prototype
+            // later
+            void() MyFunction = // the initialization
+            { dprint ("we're here\n"); };
+        </xmp>
+        Beware of the Quake-C compiler<br>
+        <br>
+    </a>
+    <hr>
+    <a name="Compilation_of_Quake-C"><br>
+        <br>
+
+
+
+
+
+
+
+
+
+
+        <u></u></a>
+    <h2><a name="Execution_of_Quake-C"><u>13. Execution of Quake-C</u></a></h2><a name="Execution_of_Quake-C"><br>
+
+
+        Code execution is initiated by C code in quake from two main places : the timed think
+        routines for periodic control, and the touch function when two objects impact each other.<br>
+        <br>
+        Execution is also caused by a few uncommon events, like the addition of a new client
+        to an existing server.<br>
+        <br>
+        There is a runnaway counter that stops a program if 100000 statements are executed,
+        assuming it is in an infinite loop.<br>
+        <br>
+        It is acceptable to change the system set global variables. This is usually done to pose
+        as another entity by changing self and calling a function.<br>
+        <br>
+        The interpretation is fairly efficient, but it is still over an order of magnitude slower
+        than compiled C code. All time consuming operations should be made into built in functions.<br>
+        <br>
+        A profile counter is kept for each function, and incremented for each interpreted
+        instruction inside that function. The "profile" console command in Quake will dump out the
+        top 10 functions, then clear all the counters. The "profile all" command will dump sorted
+        stats for every function that has been executed.<br>
+        <br>
+        <br>
+    </a>
+    <hr>
+    <a name="Execution_of_Quake-C"><br>
+        <br>
+
+
+
+
+
+
+
+    </a>
+    <h2><a name="Execution_of_Quake-C"><u>14. Examples</u></a></h2><a name="Execution_of_Quake-C"><br>
+
+        These are examples taken from the QuakeC patch archives. Two of them are made by Ferrara.
+
+        <u></u></a>
+    <h3><a name="Looping_between_all_monsters"><u>14.1 Looping between all monster
+            </u></a></h3>
+    <xmp>
+        float() Pet_FindTarget =
+        {
+        local entity client;
+        local float r;
+        local entity head, selected;
+        local float dist;
+
+
+
+        dist = 10000;
+        selected = world;
+        head = findradius(self.origin, 10000);
+        while(head)
+        {
+        if( (head.health &gt; 1) &amp;&amp; (head != self) &amp;&amp; (head != self.owner))
+        {
+        traceline(self.origin,head.origin,TRUE,self);
+        if ( (trace_fraction &gt;= 1) &amp;&amp; (vlen(head.origin - self.origin) &lt; dist)
+        &amp;&amp; (head.owner != self.owner))
+        {
+        selected = head;
+        dist = vlen(head.origin - self.origin);
+        }
+        }
+        head = head.chain;
+        }
+        if (selected != world)
+        {
+        sprint (self.owner,"Pet attacking -&gt; ");
+        if (selected.classname == "player")
+        {
+        sprint (self.owner,selected.netname);
+        sprint (selected,self.owner.netname);
+        sprint (selected," sent one of his minions after you!\n");
+        }
+        else
+        sprint (self.owner,selected.classname);
+        sprint (self.owner,"\n");
+        self.enemy = selected;
+        FoundTarget ();
+
+        return TRUE;
+        }
+
+
+        if (self.goalentity != self.owner)
+        {
+        self.goalentity = self.owner;
+        self.think = self.th_run;
+        }
+        self.ideal_yaw = vectoyaw(self.owner.origin - self.origin);
+        self.nextthink = time+0.1;
+        return FALSE;
+        };
+    </xmp>
+    <br>
+
+    <u></u>
+    <h3><u><a name="Creating_a_new_entity">14.2 Creating a new entity</a></u></h3>
+    <xmp>
+        void(entity myself) ActivateHolo =
+        {
+        local entity newholo;
+
+        newholo = spawn();
+        newholo.solid = SOLID_NOT;
+        newholo.movetype = MOVETYPE_NOCLIP;
+        newholo.origin = myself.origin;
+        newholo.angles = myself.angles;
+        newholo.colormap = myself.colormap;
+        setmodel (newholo, "progs/player.mdl");
+        newholo.classname = "holo";
+        newholo.owner=myself;
+        newholo.frame=13;
+        newholo.nextthink = time + 8;
+        newholo.think = RemoveHolo;
+        myself.currentammo = myself.ammo_cells = myself.ammo_cells - 10;
+        myself.items = myself.items | IT_HOLO;
+        stuffcmd (newholo.owner, "bf\n");
+        sprint(newholo.owner,"holograph activated\n");
+        };
+    </xmp>
+    <br>
+
+
+    <u></u>
+    <h3><u><a name="Setting_point_of_view">14.3 Setting point of view</a></u></h3>
+    <xmp>
+        void(entity me, entity camera) NezuSetViewPoint =
+        {
+        // Set view point
+        msg_entity = me; // target of message
+        WriteByte (MSG_ONE, SVC_SETVIEWPORT); // 5 = SVC_SETVIEWPORT;
+        WriteEntity (MSG_ONE, camera); // view port
+        // Also set angles, otherwise it feels strange
+        // NezuSetViewAngle(me, camera.angles);
+        WriteByte (MSG_ONE, SVC_SETVIEWANGLES); // 10 = SVC_SETVIEWANGLES
+        WriteAngle(MSG_ONE, camera.angles_x); // tilt
+        WriteAngle(MSG_ONE, camera.angles_y); // yaw
+        WriteAngle(MSG_ONE, camera.angles_z); // flip
+        };
+    </xmp><br>
+
+
+
+
+    <u></u>
+    <h3><u><a name="Teleporting">14.4 Teleporting</a></u></h3>
+    <xmp>
+        void() Teleport_to_bomb =
+        {
+        local entity oldself,bdest;
+
+        bdest=spawn();
+        bdest.origin = self.telebomb.origin + '0 0 27';
+
+        // Blow up the bomb...
+        oldself=self;
+        self=self.telebomb;
+        GrenadeExplode();
+        self=oldself;
+
+
+        // Teleport to the bomb's old location
+
+        if(self.health &lt;= 0) {
+        remove(bdest);
+        return;
+        }
+
+        // Recreating the "teleport_touch" function here, once again
+
+        spawn_tfog (bdest.origin);
+
+        spawn_tfog (bdest.origin);
+        spawn_tdeath (bdest.origin,self);
+
+        setorigin (self,bdest.origin);
+
+        self.teleport_time = time + 1; // Longer teleport recovery time
+        self.flags = self.flags - self.flags &amp; FL_ONGROUND;
+
+        remove(bdest);
+        };
+    </xmp><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Throwing_your_eyes">14.5 Throwing your eyes</a></u></h3>
+    <xmp>
+        if (self.impulse == 254)
+        {
+        local vector v;
+
+        eyes = spawn();
+        setmodel (eyes,"progs/eyes.mdl");
+        eyes.movetype = MOVETYPE_BOUNCE;
+        eyes.solid = SOLID_BBOX;
+        eyes.effects = eyes.effects | EF_DIMLIGHT;
+        msg_entity = self;
+
+        WriteByte (MSG_ONE, SVC_SETVIEWPORT);
+        WriteEntity (MSG_ONE, eyes);
+        WriteByte (MSG_ONE, SVC_SETVIEWANGLES);
+        WriteAngle(MSG_ONE, self.angles_x);
+        WriteAngle(MSG_ONE, self.angles_y);
+        WriteAngle(MSG_ONE, self.angles_z);
+
+        makevectors (self.v_angle);
+
+        if (self.v_angle_x)
+        eyes.velocity = v_forward*600 + v_up * 200 + crandom()*v_right*10 + crandom()*v_up*10;
+        else
+        {
+        eyes.velocity = aim(self, 10000);
+        eyes.velocity = eyes.velocity * 600;
+        eyes.velocity_z = 200;
+        }
+
+        eyes.avelocity = '300 300 300';
+
+        eyes.angles = vectoangles(eyes.velocity);
+
+        setsize (eyes, '-3 -3 -3', '3 3 3');
+        setorigin (eyes, self.origin);
+
+        }
+        if (self.impulse == 253)
+        {
+        local vector v;
+
+        msg_entity = self;
+        WriteByte (MSG_ONE, SVC_SETVIEWPORT);
+        WriteEntity (MSG_ONE, self);
+        WriteByte (MSG_ONE, SVC_SETVIEWANGLES);
+        v = vectoangles(eyes.origin - self.origin);
+        WriteAngle(MSG_ONE, v_x);
+        WriteAngle(MSG_ONE, v_y);
+        WriteAngle(MSG_ONE, v_z);
+        remove(eyes);
+        }
+    </xmp><br>
+
+
+
+
+
+    <u></u>
+    <h3><u><a name="Radar">14.6 Radar</a></u></h3>
+    <xmp>
+        if (cvar("temp1")==1)
+        {
+        local entity head,selected;
+        local float min,dist;
+
+        if (radar_time==0) radar_time=time;
+        if (time&gt;=radar_time)
+        {
+        min=2000;
+        head = findradius(self.origin,1000);
+        selected = world;
+
+        while (head)
+        {
+        dist = vlen(self.origin - head.origin);
+        if( (head.health &gt; 1) &amp;&amp; (head != self) &amp;&amp; (head != self.owner) &amp;&amp; (dist&lt;min) )
+        {
+        min=dist;
+        selected=head;
+        }
+        head = head.chain;
+        }
+        sound (selected, CHAN_AUTO, "radar.wav", 1, ATTN_NORM);
+        radar_time = min / 600;
+        radar_time = radar_time + time;
+        }
+        }
+    </xmp>
+    <br>
+
+    <hr>
+    <br>
+    return <a href="#title">top</a>.<br>
+
+
+</body>
+
+</html>
