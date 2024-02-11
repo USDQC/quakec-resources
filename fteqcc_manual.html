@@ -114,6 +114,51 @@ non-constant globals as multiple pontential players/etc hinder the use of such
 individual globals.</li>
 </ol>
 
+<h4>Client-Side QuakeC (CSQC)</h4>
+<p>This module runs clientside. Each client potentially has its own instance of
+CSQC, and thus they'll all end up disagreeing about some part of the game
+without the SSQC to provide authoritive information - remember this: 
+The SSQC knows best.
+
+CSQC normally has full control over the client's screen (via builtins). It is
+normally the CSQC that decides when and where to draw the various hud elements.
+The CSQC also has control over the 3d view, and can not only decide where to
+draw the 3d view, but it can also change the camera as well as directly control
+the entities that are inserted into that view.
+However, not every engine supports CSQC, and those that do might have it
+disabled for whatever reason.
+
+There are three variations of CSQC:</p>
+<ol>
+  <li>FTE:
+This was the first version of CSQC (if you ignore that CSQC was predated by
+menuqc). It is also the one that supports the most extensions since.</li>
+  <li>DP:
+DP's CSQC implementation was an attempt to follow a poorly understood and
+incomplete description of FTE's CSQC implementation. As a result, it does
+many things in a sub-par way and refuses to improve upon any of it because
+doing so might break one of the mods that use it.
+Even so, you can still achieve some awesome stuff with it, it just tends to
+be more limited than in FTE.</li>
+  <li>Simple CSQC:
+This variation of CSQC is a cut down version of CSQC. It is restricted from
+various actions and is unable to query anything about the game beyond the
+stats. Its sole purpose is to allow it to draw 2d elements including hud,
+scoreboard, and menus. The crc of the csprogs.dat explcitly matches that
+of the nq progs.dat, which allows client+server to reuse various builtins
+etc, simplifying the implementation further, this also permits the entry
+points to be provided by the progs.dat itself although this is more of a
+convienience than anything else (it should still run in a seperate VM and
+thus have no access to ssqc state).
+As an improper subset, it is trivial to create a DP-compatible csprogs that
+wraps the Simple CSQC entrypoints, allowing one csprogs to run seamlessly in
+FTE+QSS+DP, and hopefully also other engines in the future.</li>
+</ol>
+<p>CSQC tends to be more procedural than SSQC.
+Generally there is only one player so that info can all be stored in globals
+instead of entities (splitscreen may require arrays).</p>
+
+
 
 </body>
 </html>
