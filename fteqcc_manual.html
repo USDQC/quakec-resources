@@ -1,164 +1,259 @@
 <html>
+
 <head>
-	<title>FTEQCC Manual</title>
+  <title>FTEQCC Manual</title>
 </head>
+
 <body>
-	<h1>FTEQCC DOCUMENTATION</h1>
-	<p>Contents by David Walton and Marco Hladik.
-Edited and compiled by Marco Hladik.
+  <h1>FTEQCC DOCUMENTATION</h1>
+  <p>Contents by David Walton and Marco Hladik.
+    Edited and compiled by Marco Hladik.
 
-Last updated: 10th August 2018, 9:21 PM GMT</p>
+    Last updated: 10th August 2018, 9:21 PM GMT</p>
 
-<h2>Index</h2>
+  <h2>Index</h2>
 
-<ol>
-  <li>Overview
-    <ol>
-      <li>Server-Side QuakeC (SSQC)</li>
-      <li>Client-Side QuakeC (CSQC)</li>
-      <li>Menu QuakeC (MenuQC)</li>
-    </ol>
-  </li>
-  <li>Getting Started</li>
-  <li>Command-Line</li>
-  <li>Project Management</li>
-  <li>Other Pre-Processor</li>
-  <li>Control Statements</li>
-  <li>Basic Types
-    <ol>
-      <li>entity</li>
-      <li>float</li>
-      <li>string</li>
-      <li>int</li>
-      <li>vector</li>
-      <li>__variant</li>
-    </ol>
-  </li>
-  <li>Complex Types
-    <ol>
-      <li>arrays</li>
-      <li>fields</li>
-      <li>functions</li>
-      <li>typedef</li>
-      <li>enum / enumflags / strongly typed enums</li>
-      <li>struct</li>
-      <li>union</li>
-      <li>class</li>
-      <li>pointer</li>
-      <li>Accessors</li>
-    </ol>
-  </li>
-  <li>Type Modifiers
-    <ol>
-      <li>const / var</li>
-      <li>__unused / noref</li>
-      <li>__used</li>
-      <li>local</li>
-      <li>static / nonstatic</li>
-      <li>nosave</li>
-      <li>inline</li>
-      <li>strip / __ignore</li>
-      <li>shared</li>
-      <li>optional</li>
-      <li>__inout / __in / __out</li>
-      <li>__weak</li>
-      <li>__wrap</li>
-      <li>__accumulate</li>
-    </ol>
-  </li>
-  <li>Operators</li>
-  <li>Intrinsics</li>
-  <li>Modelgen Commands</li>
-  <li>Compiler Flags</li>
-  <li>Engine Support</li>
-</ol>
+  <ol>
+    <li>Overview
+      <ol>
+        <li>Server-Side QuakeC (SSQC)</li>
+        <li>Client-Side QuakeC (CSQC)</li>
+        <li>Menu QuakeC (MenuQC)</li>
+      </ol>
+    </li>
+    <li>Getting Started</li>
+    <li>Command-Line</li>
+    <li>Project Management</li>
+    <li>Other Pre-Processor</li>
+    <li>Control Statements</li>
+    <li>Basic Types
+      <ol>
+        <li>entity</li>
+        <li>float</li>
+        <li>string</li>
+        <li>int</li>
+        <li>vector</li>
+        <li>__variant</li>
+      </ol>
+    </li>
+    <li>Complex Types
+      <ol>
+        <li>arrays</li>
+        <li>fields</li>
+        <li>functions</li>
+        <li>typedef</li>
+        <li>enum / enumflags / strongly typed enums</li>
+        <li>struct</li>
+        <li>union</li>
+        <li>class</li>
+        <li>pointer</li>
+        <li>Accessors</li>
+      </ol>
+    </li>
+    <li>Type Modifiers
+      <ol>
+        <li>const / var</li>
+        <li>__unused / noref</li>
+        <li>__used</li>
+        <li>local</li>
+        <li>static / nonstatic</li>
+        <li>nosave</li>
+        <li>inline</li>
+        <li>strip / __ignore</li>
+        <li>shared</li>
+        <li>optional</li>
+        <li>__inout / __in / __out</li>
+        <li>__weak</li>
+        <li>__wrap</li>
+        <li>__accumulate</li>
+      </ol>
+    </li>
+    <li>Operators</li>
+    <li>Intrinsics</li>
+    <li>Modelgen Commands</li>
+    <li>Compiler Flags</li>
+    <li>Engine Support</li>
+  </ol>
 
-<h3>Overview</h3>
-<p>QuakeC is a language originally created by ID software for use in in the
-video game Quake. Vanilla QuakeC is quite a limited language, however with qcc
-improvements and engine extensions, its less annoying to write and also much
-more capable as a programming language.
+  <h3>Overview</h3>
+  <p>QuakeC is a language originally created by ID software for use in in the
+    video game Quake. Vanilla QuakeC is quite a limited language, however with qcc
+    improvements and engine extensions, its less annoying to write and also much
+    more capable as a programming language.
 
-Today we're dealing with different types of modules. The original QuakeC only
-supported the modification of game-code run on the server. It was not capable
-of altering any client-side behaviour. Just send a selection of commands and
-hope that the client interprets the stuff properly.</p>
-<h4>Server-Side QuakeC (SSQC)</h4>
-<p>This is the classic form of QuakeC, and is the module executed by the server
-component. SSQC's reason to exist is so that it can deal with networking. 
-It is normally considered authoritive, which is a fancy way of saying that CSQC
-isn't to be trusted (if only due to packetloss). 
-As such, the SSQC is normally expected to track the state of any entity that has
-any impact on the outcome of a game.
+    Today we're dealing with different types of modules. The original QuakeC only
+    supported the modification of game-code run on the server. It was not capable
+    of altering any client-side behaviour. Just send a selection of commands and
+    hope that the client interprets the stuff properly.</p>
+  <h4>Server-Side QuakeC (SSQC)</h4>
+  <p>This is the classic form of QuakeC, and is the module executed by the server
+    component. SSQC's reason to exist is so that it can deal with networking.
+    It is normally considered authoritive, which is a fancy way of saying that CSQC
+    isn't to be trusted (if only due to packetloss).
+    As such, the SSQC is normally expected to track the state of any entity that has
+    any impact on the outcome of a game.
 
-In mods designed to run without CSQC, the SSQC generally does a lot more than
-just that, however it is also potentially running on a computer on the other
-side of the planet, so while you can write your entire game in just the SSQC
-module, doing so means that you have no control over the user's actual screen,
-and anything that is displayed can be quite laggy which may limit what you can
-expect to achieve with SSQC alone.
+    In mods designed to run without CSQC, the SSQC generally does a lot more than
+    just that, however it is also potentially running on a computer on the other
+    side of the planet, so while you can write your entire game in just the SSQC
+    module, doing so means that you have no control over the user's actual screen,
+    and anything that is displayed can be quite laggy which may limit what you can
+    expect to achieve with SSQC alone.
 
-There are two major variations of SSQC:</p>
-<ol>
-  <li>NetQuake (NQ):
-The original and more common type.</li>
-<li>QuakeWorld (QW):
-Which was originally meant for deathmatch only. 
-It streamlines some things but in the process has a number of omissions that
-break singleplayer quake (most qw mods lack any singleplayer/coop logic, with
-no support for any monsters).
+    There are two major variations of SSQC:</p>
+  <ol>
+    <li>NetQuake (NQ):
+      The original and more common type.</li>
+    <li>QuakeWorld (QW):
+      Which was originally meant for deathmatch only.
+      It streamlines some things but in the process has a number of omissions that
+      break singleplayer quake (most qw mods lack any singleplayer/coop logic, with
+      no support for any monsters).
 
-Thus most engines focus on NQ, even FTEQW!
-SSQC tends to be very object orientated. There are comparatively few
-non-constant globals as multiple pontential players/etc hinder the use of such
-individual globals.</li>
-</ol>
+      Thus most engines focus on NQ, even FTEQW!
+      SSQC tends to be very object orientated. There are comparatively few
+      non-constant globals as multiple pontential players/etc hinder the use of such
+      individual globals.</li>
+  </ol>
 
-<h4>Client-Side QuakeC (CSQC)</h4>
-<p>This module runs clientside. Each client potentially has its own instance of
-CSQC, and thus they'll all end up disagreeing about some part of the game
-without the SSQC to provide authoritive information - remember this: 
-The SSQC knows best.
+  <h4>Client-Side QuakeC (CSQC)</h4>
+  <p>This module runs clientside. Each client potentially has its own instance of
+    CSQC, and thus they'll all end up disagreeing about some part of the game
+    without the SSQC to provide authoritive information - remember this:
+    The SSQC knows best.
 
-CSQC normally has full control over the client's screen (via builtins). It is
-normally the CSQC that decides when and where to draw the various hud elements.
-The CSQC also has control over the 3d view, and can not only decide where to
-draw the 3d view, but it can also change the camera as well as directly control
-the entities that are inserted into that view.
-However, not every engine supports CSQC, and those that do might have it
-disabled for whatever reason.
+    CSQC normally has full control over the client's screen (via builtins). It is
+    normally the CSQC that decides when and where to draw the various hud elements.
+    The CSQC also has control over the 3d view, and can not only decide where to
+    draw the 3d view, but it can also change the camera as well as directly control
+    the entities that are inserted into that view.
+    However, not every engine supports CSQC, and those that do might have it
+    disabled for whatever reason.
 
-There are three variations of CSQC:</p>
-<ol>
-  <li>FTE:
-This was the first version of CSQC (if you ignore that CSQC was predated by
-menuqc). It is also the one that supports the most extensions since.</li>
-  <li>DP:
-DP's CSQC implementation was an attempt to follow a poorly understood and
-incomplete description of FTE's CSQC implementation. As a result, it does
-many things in a sub-par way and refuses to improve upon any of it because
-doing so might break one of the mods that use it.
-Even so, you can still achieve some awesome stuff with it, it just tends to
-be more limited than in FTE.</li>
-  <li>Simple CSQC:
-This variation of CSQC is a cut down version of CSQC. It is restricted from
-various actions and is unable to query anything about the game beyond the
-stats. Its sole purpose is to allow it to draw 2d elements including hud,
-scoreboard, and menus. The crc of the csprogs.dat explcitly matches that
-of the nq progs.dat, which allows client+server to reuse various builtins
-etc, simplifying the implementation further, this also permits the entry
-points to be provided by the progs.dat itself although this is more of a
-convienience than anything else (it should still run in a seperate VM and
-thus have no access to ssqc state).
-As an improper subset, it is trivial to create a DP-compatible csprogs that
-wraps the Simple CSQC entrypoints, allowing one csprogs to run seamlessly in
-FTE+QSS+DP, and hopefully also other engines in the future.</li>
-</ol>
-<p>CSQC tends to be more procedural than SSQC.
-Generally there is only one player so that info can all be stored in globals
-instead of entities (splitscreen may require arrays).</p>
+    There are three variations of CSQC:</p>
+  <ol>
+    <li>FTE:
+      This was the first version of CSQC (if you ignore that CSQC was predated by
+      menuqc). It is also the one that supports the most extensions since.</li>
+    <li>DP:
+      DP's CSQC implementation was an attempt to follow a poorly understood and
+      incomplete description of FTE's CSQC implementation. As a result, it does
+      many things in a sub-par way and refuses to improve upon any of it because
+      doing so might break one of the mods that use it.
+      Even so, you can still achieve some awesome stuff with it, it just tends to
+      be more limited than in FTE.</li>
+    <li>Simple CSQC:
+      This variation of CSQC is a cut down version of CSQC. It is restricted from
+      various actions and is unable to query anything about the game beyond the
+      stats. Its sole purpose is to allow it to draw 2d elements including hud,
+      scoreboard, and menus. The crc of the csprogs.dat explcitly matches that
+      of the nq progs.dat, which allows client+server to reuse various builtins
+      etc, simplifying the implementation further, this also permits the entry
+      points to be provided by the progs.dat itself although this is more of a
+      convienience than anything else (it should still run in a seperate VM and
+      thus have no access to ssqc state).
+      As an improper subset, it is trivial to create a DP-compatible csprogs that
+      wraps the Simple CSQC entrypoints, allowing one csprogs to run seamlessly in
+      FTE+QSS+DP, and hopefully also other engines in the future.</li>
+  </ol>
+  <p>CSQC tends to be more procedural than SSQC.
+    Generally there is only one player so that info can all be stored in globals
+    instead of entities (splitscreen may require arrays).</p>
 
+  <h4>Menu QuakeC (MenuQC)</h4>
+  <p>The mythical MenuQC module is responsible for drawing 2d menus.
+    It serves many of the CSQC's roles, except that it does not get purged on map
+    changes and is explicitly designed to remain running even when not connected
+    to a server.
+    Becase MenuQC was implemented in DP first combined with FTE's actual attempts
+    at compatibility, there is only a single standard for MenuQC. However, while
+    MenuQC is standard, both major supporters have their own extensions, but even
+    worse is that no two engines have the same names for the same cvar.
+    Indeed, cvar-hell is why it is generally not recommended for a mod to even try
+    to support more than one engine. Its much easier to just use the engine's menus
+    instead.
+    As such, MenuQC is generally used only for standalone total conversions.</p>
+
+  <h3>Getting Started</h3>
+  <p>The best way to get started is to find an existing qc-only mod (like
+    id1qc.zip), extract the qc source files somewhere like c:\quake\mymod\src\*.qc,
+    shift-right-click the extracted .src file and select open-with and find
+    fteqccgui.exe.
+
+    Then in fteqccgui press F7 to compile, then press F5 to run (you'll be prompted
+    to locate the exe you want to run as well as you quake directory.
+    In the engine you can then just load a map.
+
+    One common suggestion is to open weapons.qc, find the W_FireRocket function, and
+    to then change the velocity multiplier for really slow moving rockets, just to
+    see that you've made a change. There are many many other things you could do
+    instead, of course.
+
+  <p>Your mod, your choice.</p>
+
+  <h3>Command-Line</h3>
+  <p>Many commandline arguments are best migrated to pragmas, or set via
+    fteqccgui's options menu.</p>
+  <ul>
+    <li>-src path
+      Specifies the directory to start looking in for source files. Mostly redundant.</li>
+    <li>-srcfile foo.src
+      Specifies the .src file to start with.</li>
+    <li>-o output.dat
+      Explicit output file name.</li>
+    <li>-O3
+      Sets optimisations to max. Do not use in addons.</li>
+    <li>-O2
+      Sets optimisations to high.</li>
+    <li>-O0
+      Turns all optimisations off. You do NOT want this. Optimisations are required in
+      order to avoid wasting defs.</li>
+    <li>-std=foo
+      Reconfigures compiler keywords+flags in order to attempt better compatibility
+      with the syntax of other QC compilers. There are absolutely no guarentees, nor
+      should there be much expectations...</li>
+    <li>-Kfoo / -Kno-foo
+      Enables the named keyword.
+      Keywords that are not enabled are still usable with a double-underscore prefix,
+      so enabling/disabling them is more for compatibility.</li>
+    <li>-Ffoo / -Fno-foo
+      Enables disables various compiler flags. There's a number of them, they're not
+      all useful either, and changing them mid-way through development will generally
+      result in new bugs in code that was working before. Consult fteqccgui's options
+      menu for a list.</li>
+    <li>-Tfoo
+      Instructs fteqcc to target a specific instruction set and output format.
+      Common options are: standard, fte, h2, dp, qtest.
+      You may prefer to use '#pragma target foo' instead.
+      Using -Th2 also enables some additional keywords in order to act like hcc.
+      Other targets do not.</li>
+    <li>-Dvariable[=value]
+      Defines the named preprocessor macro with the given value.</li>
+    <li>-Isomepath
+      Registers an alternative include path, for included files that might otherwise
+      be considered missing.</li>
+    <li>-Wall
+      Enables nearly all warnings.</li>
+    <li>-Wall
+      Enables nearly all warnings.
+      -Wextra
+      Enables more warnings than are useful. Many might be unfixable.</li>
+    <li>-Werror
+      All warnings will be treated as errors.</li>
+    <li>-Wno-mundane
+      Disables a number of warnings that you probably don't care too much about.</li>
+    <li>-v
+      Verbose. Can be used multiple times to increase verbosity. Twice will include
+      autocvar output, which should simplify creation of your mod's default.cfg</li>
+    <li>--version
+      Prints out the version of fteqcc and then quits.</li>
+    <li>-stdout
+      Runs fteqccgui as if it were fteqcc (ie: compiles and quits without creating any
+      gui windows). Note that if you want to see the output on windows then you'll
+      need to pipe the output through some other program.</li>
+  </ul>
 
 
 </body>
+
 </html>
