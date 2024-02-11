@@ -73,6 +73,47 @@ Last updated: 10th August 2018, 9:21 PM GMT</p>
   <li>Engine Support</li>
 </ol>
 
+<h3>Overview</h3>
+<p>QuakeC is a language originally created by ID software for use in in the
+video game Quake. Vanilla QuakeC is quite a limited language, however with qcc
+improvements and engine extensions, its less annoying to write and also much
+more capable as a programming language.
+
+Today we're dealing with different types of modules. The original QuakeC only
+supported the modification of game-code run on the server. It was not capable
+of altering any client-side behaviour. Just send a selection of commands and
+hope that the client interprets the stuff properly.</p>
+<h4>Server-Side QuakeC (SSQC)</h4>
+<p>This is the classic form of QuakeC, and is the module executed by the server
+component. SSQC's reason to exist is so that it can deal with networking. 
+It is normally considered authoritive, which is a fancy way of saying that CSQC
+isn't to be trusted (if only due to packetloss). 
+As such, the SSQC is normally expected to track the state of any entity that has
+any impact on the outcome of a game.
+
+In mods designed to run without CSQC, the SSQC generally does a lot more than
+just that, however it is also potentially running on a computer on the other
+side of the planet, so while you can write your entire game in just the SSQC
+module, doing so means that you have no control over the user's actual screen,
+and anything that is displayed can be quite laggy which may limit what you can
+expect to achieve with SSQC alone.
+
+There are two major variations of SSQC:</p>
+<ol>
+  <li>NetQuake (NQ):
+The original and more common type.</li>
+<li>QuakeWorld (QW):
+Which was originally meant for deathmatch only. 
+It streamlines some things but in the process has a number of omissions that
+break singleplayer quake (most qw mods lack any singleplayer/coop logic, with
+no support for any monsters).
+
+Thus most engines focus on NQ, even FTEQW!
+SSQC tends to be very object orientated. There are comparatively few
+non-constant globals as multiple pontential players/etc hinder the use of such
+individual globals.</li>
+</ol>
+
 
 </body>
 </html>
