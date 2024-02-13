@@ -10,6 +10,7 @@
     Edited and compiled by Marco Hladik.
 
     Last updated: 10th August 2018, 9:21 PM GMT</p>
+    <p>Website version created by <a href="https://github.com/SHADOWELITE7">shadowelite7</a> in 2024</p>
 
   <h2>Index</h2>
 
@@ -252,6 +253,373 @@
       gui windows). Note that if you want to see the output on windows then you'll
       need to pipe the output through some other program.</li>
   </ul>
+
+  <h3>Project Mangement</h3>
+  <p>All QuakeC starts with a single file - aka the .src. 
+This file comes in two forms.</p>
+
+<ol>
+  <li>Old style:
+    First token: treated as equivelent to #output "thetokenhere"
+    Other tokens: treated as equivelent to #include "thetokenhere"
+    Preprocessor may be used in this file only after the first token.</li>
+  <li>New style:
+    First token MUST have a leading #, and is typically #output "filename".
+    The rest of the code is treated as a .qc file in its own right, including
+    function defs etc.
+    Usually the code will be include a series of #includes in order to pull in
+    any .qc files you wish to compile.</li>
+</ol>
+<ul>
+  <li>#merge
+#merge "existing.dat" Attempts to imports an existing .dat into the compiler's
+state. The imported state will lack any and all type information, so you will
+need to re-prototype any variables that you use.
+With the use of the __wrap keyword, you can rewrite the imported functions,
+otherwise you can add additional symbols into the output.
+Do NOT use the same filename for both #merge and #output.</li>
+  <li>#copyright
+Allows you to specify a copyright message. This will be embedded at the start of
+the file, and will be displayed in a prompt if anyone tries to use fteqccgui's
+decompiler on your mod.
+You may wish to include the url of your source repo here.</li>
+  <li>#include
+Pulls in another source file, as if its contents had been embedded in the file
+instead of the #include line.</li>
+  <li>#includelist #endlist
+Acts as an #include for each line between the #includelist and #endlist lines.</li>
+  <li>#pragma includedir "path"
+Specifies an alternative path from which to include other files. The path is
+relative to the file containing the pragma (if not absolute).</li>
+  <li>#datafile
+Certain modes of operation cause FTEQCC to consider the output .dat files to be
+zips (eg with the -Fembedsrc argument).
+This argument explicitly includes the specified file within the resulting
+.dat/zip.</li>
+  <li>#pragma sourcefile
+This pragma names an additional sourcefile to be compiled at the same time.
+Thus if you have a progs.src that contains eg:
+<ul>
+    <li>#pragma sourcefile "ssqc.src"</li>
+    <li>#pragma sourcefile "CSQC.src"</li>
+</ul>
+And then you compile that progs.src, fteqcc[gui] will attempt to compile all
+three src files. This is strongly recommended for mods that involve a lot of
+debugging of more than one module, and is the only way to get fteqccgui to track
+the defs from multiple modules.</li>
+  <li>#output / #pragma PROGS_DAT
+Changes the .dat file that will be written from the current .src file.</li>
+  <li>#message
+Spits out a message to the compilers text output.
+Does not otherwise affect anything.</li>
+  <li>#pragma once
+This file will be treated as 0-length if it is included again elsewhere.</li>
+  <li>#error
+Acts as a syntax error with user-defined text.
+Useful to verify preprocessor state.</li>
+  <li>#pragma noref STATE
+If STATE is 1, then all following definitions will implicitly use the 'noref'
+type modifier, which allows the qcc to silently strip them if they are not
+actually referenced nor initialised.
+This can be used to silence warnings from *extensions.qc files.</li>
+  <li>#pragma defaultstatic STATE
+Enables/disables the assumption that variables should be static. This can be
+override on a per-variable basis with the static or nonstatic modifier.
+In programming, it can often pay to 'box' things together, allowing you to
+guarentee that only a specific part of your code can interact with something
+and thereby reduce the number of outside things that will need to change when
+refactoring code later on.
+Note that static variables are considered to be invisible to the engine also,
+which includes spawn functions and entry points, so use with caution.</li>
+  <li>#pragma autoproto
+If used, this must be used before any variables are defined. This causes fteqcc
+to compile your code twice. The first time it will look only at definitions
+while skipping over any function bodies allowing them to act as prototypes.
+The second time it will compile the functions themselves.
+Thus this ensures that any global that is declared later can freely be used in
+any expressions or functions. Unfortunately this does not also apply to locals,
+but this is usually much less of a concern.</li>
+  <li>#pragma optimise [no-]foo
+Enables or disables various specific optimisations without needing to deal with
+commandlines etc, which can ensure other users alwways use the same
+optimisation.
+Note that if the argument is 'addon' then fteqcc will disable any optimisations
+that might break addons/mutators. Otherwise accepts 0-3 as does the commandline.</li>
+  <li>#pragam keyword enable|disable KEYWORD
+Enables or disables parsing of a keyword. This can be used as a lazy wat to
+avoid conflicts between eg fteqcc's break keyword and quake's break builtin.
+Note that all keywords are still available using a double-underscore prefix,
+eg '__break;' will always work. Many keywords default to disabled in order to
+avoid common conflicts.</li>
+  <li>#pragam flag enable|disable NAMEOFFLAG
+Enables or disables some compiler flag (aka feature). These can affect how
+various expressions are interpreted.
+The exact list ought to be documented elsewhere.</li>
+  <li>#pragam warning enable|disable|error|toggle WARNINGCODE
+This controls the behaviour of the specified warning. If the warning is enabled
+then it'll print as normal. If it is disabled, then the compiler will merely
+mute the warning, everything else will still work the same. If the warning is
+set to error, then any time that warning is encountered, the compiler will
+consider it to be a soft error (aborting after 10 soft errors) and no output
+will be generated.
+The vanilla qcc silently accepted certain statements that are fundamentally
+unsafe, and which many mods of the era used.
+It is strongly recommended to make these into werrors instead, if you can.
+Not all errors have a warning code to disable them, but those that do will
+print their code every time one is encountered. Don't disable them simply
+because you're lazy, as this solves nothing (if nothing else at least use
+#warning to remind you to fix any spam later).</li>
+</ul>
+
+<h3>Other Pre-Processor</h3>
+<ul>
+  <li>#define foo bar
+Defines a preprocessor constant/macro. Any time the compiler sees 'foo', it will
+replace it with 'bar'.
+If you have more than one token, it is strongly recommended to include brackets,
+otherwise operator precedence can be confused between the code where the macro
+is used and its contents (although this may even be desirable in rare
+situations).
+Multiple-line macros can be specified by a trailing backslash on the previous
+line (there must be no whitespace between the backslash and the linebreak).
+It is possible to embed preprocessor directives inside macros by using a
+trailing backslash with the preprocessor starting on the next line.
+However, this sort of vileness is STRONGLY DISCOURAGED, and will generate
+warnings.</li>
+  <li>#define foo(args) bar
+Defines a preprocessor macro. This causes foo to act much like a function, with
+any tokens matching an argument being replaced with the contents of that
+argument, and otherwise acts as a constant.
+Note that side effects (like pre/post increments or assignments) as arguments
+can trigger multiple times if the argument is evaluated more than one in the
+macro, or not at all if its not used.
+Thus such side effects are not recommended.
+Additionally, the macro should normally enclose each argument inside a
+parenthasis in order to avoid operator precendence issues between caller
+and macro.
+Macros can contain braces or brackets, including unmatched ones, but this is
+generally not recommended except possibly in BEGIN_* and END_* macros.
+A single hash inside a macro body will 'stringify' the following token.
+A double-hash will 'paste' the preceeding and trailing token together, removing
+any whitespace, concatenating the two into a single token (which can be used to
+generate names of variables/macros according to a base token.</li>
+  <li>#append foo bar
+Appends bar onto the end of the preprocessor macro.
+This can be useful for list-like macros.</li>
+  <li>#undef foo
+Forgets the macro specified.</li>
+  <li>#if EXPRESSION
+The expression only supports numbers.
+No variables are allowed, not even if they're defined with const.
+The expession may contain && and || operators, and may include a special
+'defined(x)' intrinsic that returns true if the name is in fact defined as a
+macro (not a variable).</li>
+  <li>#ifdef MACRONAME
+Equivelent to #if defined(MACRONAME)</li>
+  <li>#ifndef MACRONAME
+Equivelent to #if !defined(MACRONAME)</li>
+  <li>#elif EXPRESSION
+Acts like #else #if expression but on a single line and without needing an
+additional #endif</li>
+  <li>#else
+Parses the following text only if none of the expression in the preceeding #ifs
+were false.</li>
+  <li>#endif
+Terminates a conditional preprocessor block.</li>
+</ul>
+
+<h3>Control Statements</h3>
+<ul>
+  <li>return</li>
+  <li>return; // for functions defined as returning void</li>
+  <li>return foo; // for functions with an actual return type.</li>
+  <li>return = foo; // for __accumulate functions that wish to execute accumulated code instead of skipping it all.</li>
+  <li>__exit; // exit as if reaching the end of the function.</li>
+</ul>
+<p>This is fantastic for confusing decompilers but otherwise should not be used.
+The accumulate version above sets an implicit variable which is automatically
+returned once control reaches the end of the function.
+The other forms will leave the function there and then.
+For compatibility reasons, fteqcc does not strictly enforce return types,
+however this is bad practise and you really should fix any related warning
+if you want to avoid unintended type punning.</p>
+<ul>
+  <li>goto foo;
+Jumps to another location of the current function. The location must be marked.
+    <pre>
+      <code>
+        goto foo;
+    unreachablecode();
+    foo:
+  </pre>
+      </code>
+  </li>
+  <li>{ }
+Blocks are a convienient way to group multiple statements.
+Note that any control statement documented as taking either a block or a
+statement does so interchangably (and many programming guides recommend that
+blocks ALWAYS be used).
+Note that blocks can be used outside of control statements too.
+This allows for weird grouping or preprocessor workarounds.</li>
+  <li>if (condition) statement;
+The most simple conditional branch.
+If the condition is considered true, then the code will be executed, otherwise
+it will be skipped. If the expression is followed by an else satement then that
+will be executed if the primary block was not.
+Large 'else if' chains can be constructed, but you may find switch statements to
+be more readable. 
+At this point, we have to ask ourselves what the nature of truth really is.
+Not in a philosophical sense, but in a programmery sense.</li>
+</ul>
+<p>QuakeC looks for truth in multiple ways, and all control statements use the same
+basic form of truth, which depends upon types, but unitialised variables are
+always FALSE (except field references, which are typically auto-initialised):</p>
+<ul>
+  <li>int
+    False when 0, true when anything else.</li>
+  <li>float
+    False when +0, true when anything else. Note that -0 is normally TRUE, but
+    some engines might treat this as false regardless, so don't expect things
+    to make sense. There's a compile-flag to treat if(-0) as FALSE, for a small
+    performance hit.</li>
+  <li>strings
+    False when NULL, true when not NULL. Note that empty strings are not the
+    same as NULL.</li>
+  <li>functions
+    Only the null function is false (assignments from __NULL__ or other null
+    functions can be used to reset a function reference to null).
+    Other functions (including SUB_Null) are considered true.</li>
+  <li>vectors
+    By default, fteqcc compares all three components against +/-0.
+    Other QC compilers will typically test the _x component only.</li>
+  <li>fields
+    Tests for null... Note that (typically) the modelindex field aliases the
+    null field, so would be considered false.</li>
+  <li>entities
+    The world entity is equivelent to null, and thus false. All other entities
+    are considered true.</li>
+  <li>pointers
+    __NULL__ is false, otherwise true.</li>
+  <li>__variant
+    Danger... don't do this at home.</li>
+  <li>arrays, structs, unions
+    These complex types cannot be evaluated for truth. You will need to evaluate
+    a specific index or member instead.</li>
+</ul>
+
+<p>HexenC adds an inverted form of if statements:</p>
+<pre>
+  <code>
+    if not(condition)
+        break;
+  </code>
+</pre>
+
+<p>Which is especially useful to test the return value of eg fgets, allowing you to
+detect end-of-file conditions without breaking when encountering empty lines -
+note that `if(!condition)` tests for empty instead of null, and is thus not
+suitable in all cases.</p>
+
+<ul>
+  <li>for (initial; condition; increment) statement;
+Like in C. The initial terms are executed, then the loop will restart for as
+long as the condition evaluates to true. The increment term is executed each
+time the loop is restarted (including via continues) but not the initial time.
+Multiple initial terms or increments can be achieved via use of the comma
+operator, while the condition term must use the && or || operators.
+Declarations are permitted inside the initial term, but have scope only within
+the loop.</li>
+  <li>while (condition) statement;</li>
+  <li>do while
+    <pre>
+      <code>
+        do {
+        statements();
+    } while( condition );
+      </code>
+    </pre>
+  </li>
+  <li>__state
+This is an alternative way to set .frame, .think, and .nextthink in a single
+opcode.
+<pre>
+  <code>
+    __state [framenumber, functiontothink]; // quake style, accepts expressions,
+                                            however do not use pre-increment
+                                            nor post-increment as this is
+                                            potentially ambiguous - use
+                                            brackets if you need this.
+    __state [++ firstframe .. lastframe]; // hexen2 style, MUST use immediates
+                                            / frame macros.
+  </code>
+</pre>
+<p>For the hexen2-style version, the animation automatically repeats
+selecting(wrapping) the frame. The cycle_wrapped global will be set according to
+whether the animation wrapped or not (starting from a frame outside of the range
+does not count as a wrap).</p>
+</li>
+</ul>
+<pre>
+  <code>
+    switch / case / default
+    switch (expression) {
+    case 0:
+        statements;
+        break;
+    case 1..5: // ranges are inclusive, so this includes 5 but not 5.001
+        statements;
+        break;
+    case 6: // falls through
+    case 7:
+        statements;
+        break;
+    default:  // if none of the above cases matched (like 8 or .3)
+        statements;
+        break;
+    }
+  </code>
+</pre>
+<p>Switches allow a slightly cleaner alternative to massive if-else-if-else chains.
+The case statements define various possible values, with the following code
+being executed.
+The 'default' statement defines a fallback location to execute from if none of
+the cases matched the expression's value. Note that execution will continue
+through any later cases, so be sure to use break statements to prevent undesired
+fall-throughts.
+Cases may be either a single value, or in the case of a numeric expression they
+may be a range of values seperated by a double-dot (eg: case 0..1:foo;break;).
+Cases are not required to be constants, but they must not be expressions (which
+means fixed array indexes are acceptable, but not dynamic indexes).</p>
+
+<ul>
+  <li>__thinktime
+    <pre>
+      <code>
+         __thinktime ent : delay;
+is equivelent to 
+    ent.nextthink = time + delay;
+      </code>
+    </pre>
+  When using -Th2 on the commandline, the double-underscores are not required.</li>
+  <li>__until
+    <pre>
+      <code>
+        __until(condition) {statements;}
+      </code>
+    </pre>
+  A flipped version of while loops - the loop will repeat until the condition
+becomes true. When using -Th2 on the commandline, the double-underscores are not
+required.</li>
+<li>__loop
+  <pre>
+    <code>
+      __loop { statements; }
+    </code>
+  </pre>
+Generally its better to use while(1){} or for(;;){} instead
+When using -Th2 on the commandline, the double-underscores are not required.</li>
+</ul>
+
 
 
 </body>
