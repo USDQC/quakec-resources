@@ -797,6 +797,26 @@ is equivelent to
   <p>This type represents an undefined type no larger than a vector, and should
     normally be used only for function arguments or return value, but can also be
     used for type punning.</p>
+
+  <h3>Complex Types</h3>
+  <h4>arrays</h4>
+  <p>FTEQCC supports single-dimension arrays.
+<pre><code>float foo[] = {1,2,3,4};</code></pre>
+will thus define a float array and will infer its length as 4.
+If you need to use an explicit length, or you do not wish to initialise the
+array, then you must put the needed length inside the square brackets.
+Note that arrays are 0-based, so an array defined as float foo[2]; can be
+accessed as foo[0] or foo[1], but any other value (including foo[2]) is out of
+bounds. Indexes will be rounded down.
+foo.length can be read if you wish to know how long an array is (especially if
+the length was inferred for some reason)
+Dynamic indexes ARE supported in all cases, however they may come at a
+significant performance loss if you do not have extended opcodes enabled, so it
+is generally preferable to unroll small loops such that constant indexes can be
+used.
+Dynamic lengths are not supported at this time.
+Arrays are also supported within structs, allowing for (clumsy)
+multi-dimensional arrays.</p>
 </body>
 
 </html>
