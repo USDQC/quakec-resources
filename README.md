@@ -36,4 +36,4 @@ Credits:
 Special thanks to:
 The quake mapping community, especially to the programmers and coders of our community, you all rock!
 
-[https://github.com/USDQC/quakec-resources/blob/website/LICENSE.md](GNU GENERAL PUBLIC LICENSE) 
+[GNU GENERAL PUBLIC LICENSE](https://github.com/USDQC/quakec-resources/blob/website/LICENSE.md)
