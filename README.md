@@ -7,7 +7,6 @@ We (Chuma and Shadowelite7) decided to make this small documentation project tha
 At least to help for getting the referencial info on QuakeC.
 
 We've decided to gather all the most useful resources referenced by the people that have been coding in QuakeC... to help newcomers and veterans in condensing the information in one place.
-<<<<<<< HEAD
 
 ### QuakeC Reference manual
 [PDF Version](https://github.com/USDQC/quakec-resources/blob/website/quakec.pdf)
@@ -38,35 +37,3 @@ Special thanks to:
 The quake mapping community, especially to the programmers and coders of our community, you all rock!
 
 [GNU GENERAL PUBLIC LICENSE](https://github.com/USDQC/quakec-resources/blob/website/LICENSE.md)
-=======
-
-### QuakeC Reference manual
-[PDF Version](https://github.com/USDQC/quakec-resources/blob/website/quakec.pdf)
-
-[Doc Version](https://github.com/USDQC/quakec-resources/blob/website/quakec.docx)
-
-
-
-### FTEQCC Manual
-[HTML Version](https://github.com/USDQC/quakec-resources/blob/website/fteqcc_manual.html)
-
-[TXT version](https://github.com/USDQC/quakec-resources/blob/website/fteqcc_manual.txt)
-
-
-### QuakeC Manual
-[HTML Version](https://github.com/USDQC/quakec-resources/blob/website/qcmanual.html)
-
-
-## Credits and another info.
-
-Sources pending.
-
-Credits:
-- Shadowelite7 (main project leader and info converter)
-- Chuma (Co-project leader and info compiler)
-
-Special thanks to:
-The quake mapping community, especially to the programmers and coders of our community, you all rock!
-
-
->>>>>>> a559e10956430f649cab2f6b7ef1dd3b8da07528
