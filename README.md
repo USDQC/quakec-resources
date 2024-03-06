@@ -29,6 +29,8 @@ We've decided to gather all the most useful resources referenced by the people t
 
 Sources pending.
 
+(https://github.com/USDQC/quakec-resources/blob/website/LICENSE.md)[GNU GENERAL PUBLIC LICENSE] 
+
 Credits:
 - Shadowelite7 (main project leader and info converter)
 - Chuma (Co-project leader and info compiler)
