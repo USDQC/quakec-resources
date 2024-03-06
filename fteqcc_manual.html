@@ -1,0 +1,1160 @@
+<html>
+
+<head>
+  <title>FTEQCC Manual</title>
+</head>
+
+<body>
+  <h1>FTEQCC DOCUMENTATION</h1>
+  <p>Contents by David Walton and Marco Hladik.
+    Edited and compiled by Marco Hladik.
+
+    Last updated: 10th August 2018, 9:21 PM GMT</p>
+  <p>Website version created by <a href="https://github.com/SHADOWELITE7">shadowelite7</a> in 2024</p>
+
+  <h2>Index</h2>
+
+  <ol>
+    <li>Overview
+      <ol>
+        <li>Server-Side QuakeC (SSQC)</li>
+        <li>Client-Side QuakeC (CSQC)</li>
+        <li>Menu QuakeC (MenuQC)</li>
+      </ol>
+    </li>
+    <li>Getting Started</li>
+    <li>Command-Line</li>
+    <li>Project Management</li>
+    <li>Other Pre-Processor</li>
+    <li>Control Statements</li>
+    <li>Basic Types
+      <ol>
+        <li>entity</li>
+        <li>float</li>
+        <li>string</li>
+        <li>int</li>
+        <li>vector</li>
+        <li>__variant</li>
+      </ol>
+    </li>
+    <li>Complex Types
+      <ol>
+        <li>arrays</li>
+        <li>fields</li>
+        <li>functions</li>
+        <li>typedef</li>
+        <li>enum / enumflags / strongly typed enums</li>
+        <li>struct</li>
+        <li>union</li>
+        <li>class</li>
+        <li>pointer</li>
+        <li>Accessors</li>
+      </ol>
+    </li>
+    <li>Type Modifiers
+      <ol>
+        <li>const / var</li>
+        <li>__unused / noref</li>
+        <li>__used</li>
+        <li>local</li>
+        <li>static / nonstatic</li>
+        <li>nosave</li>
+        <li>inline</li>
+        <li>strip / __ignore</li>
+        <li>shared</li>
+        <li>optional</li>
+        <li>__inout / __in / __out</li>
+        <li>__weak</li>
+        <li>__wrap</li>
+        <li>__accumulate</li>
+      </ol>
+    </li>
+    <li>Operators</li>
+    <li>Intrinsics</li>
+    <li>Modelgen Commands</li>
+    <li>Compiler Flags</li>
+    <li>Engine Support</li>
+  </ol>
+
+  <h3>Overview</h3>
+  <p>QuakeC is a language originally created by ID software for use in in the
+    video game Quake. Vanilla QuakeC is quite a limited language, however with qcc
+    improvements and engine extensions, its less annoying to write and also much
+    more capable as a programming language.
+
+    Today we're dealing with different types of modules. The original QuakeC only
+    supported the modification of game-code run on the server. It was not capable
+    of altering any client-side behaviour. Just send a selection of commands and
+    hope that the client interprets the stuff properly.</p>
+  <h4>Server-Side QuakeC (SSQC)</h4>
+  <p>This is the classic form of QuakeC, and is the module executed by the server
+    component. SSQC's reason to exist is so that it can deal with networking.
+    It is normally considered authoritive, which is a fancy way of saying that CSQC
+    isn't to be trusted (if only due to packetloss).
+    As such, the SSQC is normally expected to track the state of any entity that has
+    any impact on the outcome of a game.
+
+    In mods designed to run without CSQC, the SSQC generally does a lot more than
+    just that, however it is also potentially running on a computer on the other
+    side of the planet, so while you can write your entire game in just the SSQC
+    module, doing so means that you have no control over the user's actual screen,
+    and anything that is displayed can be quite laggy which may limit what you can
+    expect to achieve with SSQC alone.
+
+    There are two major variations of SSQC:</p>
+  <ol>
+    <li>NetQuake (NQ):
+      The original and more common type.</li>
+    <li>QuakeWorld (QW):
+      Which was originally meant for deathmatch only.
+      It streamlines some things but in the process has a number of omissions that
+      break singleplayer quake (most qw mods lack any singleplayer/coop logic, with
+      no support for any monsters).
+
+      Thus most engines focus on NQ, even FTEQW!
+      SSQC tends to be very object orientated. There are comparatively few
+      non-constant globals as multiple pontential players/etc hinder the use of such
+      individual globals.</li>
+  </ol>
+
+  <h4>Client-Side QuakeC (CSQC)</h4>
+  <p>This module runs clientside. Each client potentially has its own instance of
+    CSQC, and thus they'll all end up disagreeing about some part of the game
+    without the SSQC to provide authoritive information - remember this:
+    The SSQC knows best.
+
+    CSQC normally has full control over the client's screen (via builtins). It is
+    normally the CSQC that decides when and where to draw the various hud elements.
+    The CSQC also has control over the 3d view, and can not only decide where to
+    draw the 3d view, but it can also change the camera as well as directly control
+    the entities that are inserted into that view.
+    However, not every engine supports CSQC, and those that do might have it
+    disabled for whatever reason.
+
+    There are three variations of CSQC:</p>
+  <ol>
+    <li>FTE:
+      This was the first version of CSQC (if you ignore that CSQC was predated by
+      menuqc). It is also the one that supports the most extensions since.</li>
+    <li>DP:
+      DP's CSQC implementation was an attempt to follow a poorly understood and
+      incomplete description of FTE's CSQC implementation. As a result, it does
+      many things in a sub-par way and refuses to improve upon any of it because
+      doing so might break one of the mods that use it.
+      Even so, you can still achieve some awesome stuff with it, it just tends to
+      be more limited than in FTE.</li>
+    <li>Simple CSQC:
+      This variation of CSQC is a cut down version of CSQC. It is restricted from
+      various actions and is unable to query anything about the game beyond the
+      stats. Its sole purpose is to allow it to draw 2d elements including hud,
+      scoreboard, and menus. The crc of the csprogs.dat explcitly matches that
+      of the nq progs.dat, which allows client+server to reuse various builtins
+      etc, simplifying the implementation further, this also permits the entry
+      points to be provided by the progs.dat itself although this is more of a
+      convienience than anything else (it should still run in a seperate VM and
+      thus have no access to ssqc state).
+      As an improper subset, it is trivial to create a DP-compatible csprogs that
+      wraps the Simple CSQC entrypoints, allowing one csprogs to run seamlessly in
+      FTE+QSS+DP, and hopefully also other engines in the future.</li>
+  </ol>
+  <p>CSQC tends to be more procedural than SSQC.
+    Generally there is only one player so that info can all be stored in globals
+    instead of entities (splitscreen may require arrays).</p>
+
+  <h4>Menu QuakeC (MenuQC)</h4>
+  <p>The mythical MenuQC module is responsible for drawing 2d menus.
+    It serves many of the CSQC's roles, except that it does not get purged on map
+    changes and is explicitly designed to remain running even when not connected
+    to a server.
+    Becase MenuQC was implemented in DP first combined with FTE's actual attempts
+    at compatibility, there is only a single standard for MenuQC. However, while
+    MenuQC is standard, both major supporters have their own extensions, but even
+    worse is that no two engines have the same names for the same cvar.
+    Indeed, cvar-hell is why it is generally not recommended for a mod to even try
+    to support more than one engine. Its much easier to just use the engine's menus
+    instead.
+    As such, MenuQC is generally used only for standalone total conversions.</p>
+
+  <h3>Getting Started</h3>
+  <p>The best way to get started is to find an existing qc-only mod (like
+    id1qc.zip), extract the qc source files somewhere like c:\quake\mymod\src\*.qc,
+    shift-right-click the extracted .src file and select open-with and find
+    fteqccgui.exe.
+
+    Then in fteqccgui press F7 to compile, then press F5 to run (you'll be prompted
+    to locate the exe you want to run as well as you quake directory.
+    In the engine you can then just load a map.
+
+    One common suggestion is to open weapons.qc, find the W_FireRocket function, and
+    to then change the velocity multiplier for really slow moving rockets, just to
+    see that you've made a change. There are many many other things you could do
+    instead, of course.
+
+  <p>Your mod, your choice.</p>
+
+  <h3>Command-Line</h3>
+  <p>Many commandline arguments are best migrated to pragmas, or set via
+    fteqccgui's options menu.</p>
+  <ul>
+    <li>-src path
+      Specifies the directory to start looking in for source files. Mostly redundant.</li>
+    <li>-srcfile foo.src
+      Specifies the .src file to start with.</li>
+    <li>-o output.dat
+      Explicit output file name.</li>
+    <li>-O3
+      Sets optimisations to max. Do not use in addons.</li>
+    <li>-O2
+      Sets optimisations to high.</li>
+    <li>-O0
+      Turns all optimisations off. You do NOT want this. Optimisations are required in
+      order to avoid wasting defs.</li>
+    <li>-std=foo
+      Reconfigures compiler keywords+flags in order to attempt better compatibility
+      with the syntax of other QC compilers. There are absolutely no guarentees, nor
+      should there be much expectations...</li>
+    <li>-Kfoo / -Kno-foo
+      Enables the named keyword.
+      Keywords that are not enabled are still usable with a double-underscore prefix,
+      so enabling/disabling them is more for compatibility.</li>
+    <li>-Ffoo / -Fno-foo
+      Enables disables various compiler flags. There's a number of them, they're not
+      all useful either, and changing them mid-way through development will generally
+      result in new bugs in code that was working before. Consult fteqccgui's options
+      menu for a list.</li>
+    <li>-Tfoo
+      Instructs fteqcc to target a specific instruction set and output format.
+      Common options are: standard, fte, h2, dp, qtest.
+      You may prefer to use '#pragma target foo' instead.
+      Using -Th2 also enables some additional keywords in order to act like hcc.
+      Other targets do not.</li>
+    <li>-Dvariable[=value]
+      Defines the named preprocessor macro with the given value.</li>
+    <li>-Isomepath
+      Registers an alternative include path, for included files that might otherwise
+      be considered missing.</li>
+    <li>-Wall
+      Enables nearly all warnings.</li>
+    <li>-Wall
+      Enables nearly all warnings.
+      -Wextra
+      Enables more warnings than are useful. Many might be unfixable.</li>
+    <li>-Werror
+      All warnings will be treated as errors.</li>
+    <li>-Wno-mundane
+      Disables a number of warnings that you probably don't care too much about.</li>
+    <li>-v
+      Verbose. Can be used multiple times to increase verbosity. Twice will include
+      autocvar output, which should simplify creation of your mod's default.cfg</li>
+    <li>--version
+      Prints out the version of fteqcc and then quits.</li>
+    <li>-stdout
+      Runs fteqccgui as if it were fteqcc (ie: compiles and quits without creating any
+      gui windows). Note that if you want to see the output on windows then you'll
+      need to pipe the output through some other program.</li>
+  </ul>
+
+  <h3>Project Mangement</h3>
+  <p>All QuakeC starts with a single file - aka the .src.
+    This file comes in two forms.</p>
+
+  <ol>
+    <li>Old style:
+      First token: treated as equivelent to #output "thetokenhere"
+      Other tokens: treated as equivelent to #include "thetokenhere"
+      Preprocessor may be used in this file only after the first token.</li>
+    <li>New style:
+      First token MUST have a leading #, and is typically #output "filename".
+      The rest of the code is treated as a .qc file in its own right, including
+      function defs etc.
+      Usually the code will be include a series of #includes in order to pull in
+      any .qc files you wish to compile.</li>
+  </ol>
+  <ul>
+    <li>#merge
+      #merge "existing.dat" Attempts to imports an existing .dat into the compiler's
+      state. The imported state will lack any and all type information, so you will
+      need to re-prototype any variables that you use.
+      With the use of the __wrap keyword, you can rewrite the imported functions,
+      otherwise you can add additional symbols into the output.
+      Do NOT use the same filename for both #merge and #output.</li>
+    <li>#copyright
+      Allows you to specify a copyright message. This will be embedded at the start of
+      the file, and will be displayed in a prompt if anyone tries to use fteqccgui's
+      decompiler on your mod.
+      You may wish to include the url of your source repo here.</li>
+    <li>#include
+      Pulls in another source file, as if its contents had been embedded in the file
+      instead of the #include line.</li>
+    <li>#includelist #endlist
+      Acts as an #include for each line between the #includelist and #endlist lines.</li>
+    <li>#pragma includedir "path"
+      Specifies an alternative path from which to include other files. The path is
+      relative to the file containing the pragma (if not absolute).</li>
+    <li>#datafile
+      Certain modes of operation cause FTEQCC to consider the output .dat files to be
+      zips (eg with the -Fembedsrc argument).
+      This argument explicitly includes the specified file within the resulting
+      .dat/zip.</li>
+    <li>#pragma sourcefile
+      This pragma names an additional sourcefile to be compiled at the same time.
+      Thus if you have a progs.src that contains eg:
+      <ul>
+        <li>#pragma sourcefile "ssqc.src"</li>
+        <li>#pragma sourcefile "CSQC.src"</li>
+      </ul>
+      And then you compile that progs.src, fteqcc[gui] will attempt to compile all
+      three src files. This is strongly recommended for mods that involve a lot of
+      debugging of more than one module, and is the only way to get fteqccgui to track
+      the defs from multiple modules.
+    </li>
+    <li>#output / #pragma PROGS_DAT
+      Changes the .dat file that will be written from the current .src file.</li>
+    <li>#message
+      Spits out a message to the compilers text output.
+      Does not otherwise affect anything.</li>
+    <li>#pragma once
+      This file will be treated as 0-length if it is included again elsewhere.</li>
+    <li>#error
+      Acts as a syntax error with user-defined text.
+      Useful to verify preprocessor state.</li>
+    <li>#pragma noref STATE
+      If STATE is 1, then all following definitions will implicitly use the 'noref'
+      type modifier, which allows the qcc to silently strip them if they are not
+      actually referenced nor initialised.
+      This can be used to silence warnings from *extensions.qc files.</li>
+    <li>#pragma defaultstatic STATE
+      Enables/disables the assumption that variables should be static. This can be
+      override on a per-variable basis with the static or nonstatic modifier.
+      In programming, it can often pay to 'box' things together, allowing you to
+      guarentee that only a specific part of your code can interact with something
+      and thereby reduce the number of outside things that will need to change when
+      refactoring code later on.
+      Note that static variables are considered to be invisible to the engine also,
+      which includes spawn functions and entry points, so use with caution.</li>
+    <li>#pragma autoproto
+      If used, this must be used before any variables are defined. This causes fteqcc
+      to compile your code twice. The first time it will look only at definitions
+      while skipping over any function bodies allowing them to act as prototypes.
+      The second time it will compile the functions themselves.
+      Thus this ensures that any global that is declared later can freely be used in
+      any expressions or functions. Unfortunately this does not also apply to locals,
+      but this is usually much less of a concern.</li>
+    <li>#pragma optimise [no-]foo
+      Enables or disables various specific optimisations without needing to deal with
+      commandlines etc, which can ensure other users alwways use the same
+      optimisation.
+      Note that if the argument is 'addon' then fteqcc will disable any optimisations
+      that might break addons/mutators. Otherwise accepts 0-3 as does the commandline.</li>
+    <li>#pragam keyword enable|disable KEYWORD
+      Enables or disables parsing of a keyword. This can be used as a lazy wat to
+      avoid conflicts between eg fteqcc's break keyword and quake's break builtin.
+      Note that all keywords are still available using a double-underscore prefix,
+      eg '__break;' will always work. Many keywords default to disabled in order to
+      avoid common conflicts.</li>
+    <li>#pragam flag enable|disable NAMEOFFLAG
+      Enables or disables some compiler flag (aka feature). These can affect how
+      various expressions are interpreted.
+      The exact list ought to be documented elsewhere.</li>
+    <li>#pragam warning enable|disable|error|toggle WARNINGCODE
+      This controls the behaviour of the specified warning. If the warning is enabled
+      then it'll print as normal. If it is disabled, then the compiler will merely
+      mute the warning, everything else will still work the same. If the warning is
+      set to error, then any time that warning is encountered, the compiler will
+      consider it to be a soft error (aborting after 10 soft errors) and no output
+      will be generated.
+      The vanilla qcc silently accepted certain statements that are fundamentally
+      unsafe, and which many mods of the era used.
+      It is strongly recommended to make these into werrors instead, if you can.
+      Not all errors have a warning code to disable them, but those that do will
+      print their code every time one is encountered. Don't disable them simply
+      because you're lazy, as this solves nothing (if nothing else at least use
+      #warning to remind you to fix any spam later).</li>
+  </ul>
+
+  <h3>Other Pre-Processor</h3>
+  <ul>
+    <li>#define foo bar
+      Defines a preprocessor constant/macro. Any time the compiler sees 'foo', it will
+      replace it with 'bar'.
+      If you have more than one token, it is strongly recommended to include brackets,
+      otherwise operator precedence can be confused between the code where the macro
+      is used and its contents (although this may even be desirable in rare
+      situations).
+      Multiple-line macros can be specified by a trailing backslash on the previous
+      line (there must be no whitespace between the backslash and the linebreak).
+      It is possible to embed preprocessor directives inside macros by using a
+      trailing backslash with the preprocessor starting on the next line.
+      However, this sort of vileness is STRONGLY DISCOURAGED, and will generate
+      warnings.</li>
+    <li>#define foo(args) bar
+      Defines a preprocessor macro. This causes foo to act much like a function, with
+      any tokens matching an argument being replaced with the contents of that
+      argument, and otherwise acts as a constant.
+      Note that side effects (like pre/post increments or assignments) as arguments
+      can trigger multiple times if the argument is evaluated more than one in the
+      macro, or not at all if its not used.
+      Thus such side effects are not recommended.
+      Additionally, the macro should normally enclose each argument inside a
+      parenthasis in order to avoid operator precendence issues between caller
+      and macro.
+      Macros can contain braces or brackets, including unmatched ones, but this is
+      generally not recommended except possibly in BEGIN_* and END_* macros.
+      A single hash inside a macro body will 'stringify' the following token.
+      A double-hash will 'paste' the preceeding and trailing token together, removing
+      any whitespace, concatenating the two into a single token (which can be used to
+      generate names of variables/macros according to a base token.</li>
+    <li>#append foo bar
+      Appends bar onto the end of the preprocessor macro.
+      This can be useful for list-like macros.</li>
+    <li>#undef foo
+      Forgets the macro specified.</li>
+    <li>#if EXPRESSION
+      The expression only supports numbers.
+      No variables are allowed, not even if they're defined with const.
+      The expession may contain && and || operators, and may include a special
+      'defined(x)' intrinsic that returns true if the name is in fact defined as a
+      macro (not a variable).</li>
+    <li>#ifdef MACRONAME
+      Equivelent to #if defined(MACRONAME)</li>
+    <li>#ifndef MACRONAME
+      Equivelent to #if !defined(MACRONAME)</li>
+    <li>#elif EXPRESSION
+      Acts like #else #if expression but on a single line and without needing an
+      additional #endif</li>
+    <li>#else
+      Parses the following text only if none of the expression in the preceeding #ifs
+      were false.</li>
+    <li>#endif
+      Terminates a conditional preprocessor block.</li>
+  </ul>
+
+  <h3>Control Statements</h3>
+  <ul>
+    <li>return</li>
+    <li>return; // for functions defined as returning void</li>
+    <li>return foo; // for functions with an actual return type.</li>
+    <li>return = foo; // for __accumulate functions that wish to execute accumulated code instead of skipping it all.
+    </li>
+    <li>__exit; // exit as if reaching the end of the function.</li>
+  </ul>
+  <p>This is fantastic for confusing decompilers but otherwise should not be used.
+    The accumulate version above sets an implicit variable which is automatically
+    returned once control reaches the end of the function.
+    The other forms will leave the function there and then.
+    For compatibility reasons, fteqcc does not strictly enforce return types,
+    however this is bad practise and you really should fix any related warning
+    if you want to avoid unintended type punning.</p>
+  <ul>
+    <li>goto foo;
+      Jumps to another location of the current function. The location must be marked.
+      <pre>
+      <code>
+        goto foo;
+    unreachablecode();
+    foo:
+  </pre>
+      </code>
+    </li>
+    <li>{ }
+      Blocks are a convienient way to group multiple statements.
+      Note that any control statement documented as taking either a block or a
+      statement does so interchangably (and many programming guides recommend that
+      blocks ALWAYS be used).
+      Note that blocks can be used outside of control statements too.
+      This allows for weird grouping or preprocessor workarounds.</li>
+    <li>if (condition) statement;
+      The most simple conditional branch.
+      If the condition is considered true, then the code will be executed, otherwise
+      it will be skipped. If the expression is followed by an else satement then that
+      will be executed if the primary block was not.
+      Large 'else if' chains can be constructed, but you may find switch statements to
+      be more readable.
+      At this point, we have to ask ourselves what the nature of truth really is.
+      Not in a philosophical sense, but in a programmery sense.</li>
+  </ul>
+  <p>QuakeC looks for truth in multiple ways, and all control statements use the same
+    basic form of truth, which depends upon types, but unitialised variables are
+    always FALSE (except field references, which are typically auto-initialised):</p>
+  <ul>
+    <li>int
+      False when 0, true when anything else.</li>
+    <li>float
+      False when +0, true when anything else. Note that -0 is normally TRUE, but
+      some engines might treat this as false regardless, so don't expect things
+      to make sense. There's a compile-flag to treat if(-0) as FALSE, for a small
+      performance hit.</li>
+    <li>strings
+      False when NULL, true when not NULL. Note that empty strings are not the
+      same as NULL.</li>
+    <li>functions
+      Only the null function is false (assignments from __NULL__ or other null
+      functions can be used to reset a function reference to null).
+      Other functions (including SUB_Null) are considered true.</li>
+    <li>vectors
+      By default, fteqcc compares all three components against +/-0.
+      Other QC compilers will typically test the _x component only.</li>
+    <li>fields
+      Tests for null... Note that (typically) the modelindex field aliases the
+      null field, so would be considered false.</li>
+    <li>entities
+      The world entity is equivelent to null, and thus false. All other entities
+      are considered true.</li>
+    <li>pointers
+      __NULL__ is false, otherwise true.</li>
+    <li>__variant
+      Danger... don't do this at home.</li>
+    <li>arrays, structs, unions
+      These complex types cannot be evaluated for truth. You will need to evaluate
+      a specific index or member instead.</li>
+  </ul>
+
+  <p>HexenC adds an inverted form of if statements:</p>
+  <pre>
+  <code>
+    if not(condition)
+        break;
+  </code>
+</pre>
+
+  <p>Which is especially useful to test the return value of eg fgets, allowing you to
+    detect end-of-file conditions without breaking when encountering empty lines -
+    note that `if(!condition)` tests for empty instead of null, and is thus not
+    suitable in all cases.</p>
+
+  <ul>
+    <li>for (initial; condition; increment) statement;
+      Like in C. The initial terms are executed, then the loop will restart for as
+      long as the condition evaluates to true. The increment term is executed each
+      time the loop is restarted (including via continues) but not the initial time.
+      Multiple initial terms or increments can be achieved via use of the comma
+      operator, while the condition term must use the && or || operators.
+      Declarations are permitted inside the initial term, but have scope only within
+      the loop.</li>
+    <li>while (condition) statement;</li>
+    <li>do while
+      <pre>
+      <code>
+        do {
+        statements();
+    } while( condition );
+      </code>
+    </pre>
+    </li>
+    <li>__state
+      This is an alternative way to set .frame, .think, and .nextthink in a single
+      opcode.
+      <pre>
+  <code>
+    __state [framenumber, functiontothink]; // quake style, accepts expressions,
+                                            however do not use pre-increment
+                                            nor post-increment as this is
+                                            potentially ambiguous - use
+                                            brackets if you need this.
+    __state [++ firstframe .. lastframe]; // hexen2 style, MUST use immediates
+                                            / frame macros.
+  </code>
+</pre>
+      <p>For the hexen2-style version, the animation automatically repeats
+        selecting(wrapping) the frame. The cycle_wrapped global will be set according to
+        whether the animation wrapped or not (starting from a frame outside of the range
+        does not count as a wrap).</p>
+    </li>
+  </ul>
+  <pre>
+  <code>
+    switch / case / default
+    switch (expression) {
+    case 0:
+        statements;
+        break;
+    case 1..5: // ranges are inclusive, so this includes 5 but not 5.001
+        statements;
+        break;
+    case 6: // falls through
+    case 7:
+        statements;
+        break;
+    default:  // if none of the above cases matched (like 8 or .3)
+        statements;
+        break;
+    }
+  </code>
+</pre>
+  <p>Switches allow a slightly cleaner alternative to massive if-else-if-else chains.
+    The case statements define various possible values, with the following code
+    being executed.
+    The 'default' statement defines a fallback location to execute from if none of
+    the cases matched the expression's value. Note that execution will continue
+    through any later cases, so be sure to use break statements to prevent undesired
+    fall-throughts.
+    Cases may be either a single value, or in the case of a numeric expression they
+    may be a range of values seperated by a double-dot (eg: case 0..1:foo;break;).
+    Cases are not required to be constants, but they must not be expressions (which
+    means fixed array indexes are acceptable, but not dynamic indexes).</p>
+
+  <ul>
+    <li>__thinktime
+      <pre>
+      <code>
+         __thinktime ent : delay;
+is equivelent to 
+    ent.nextthink = time + delay;
+      </code>
+    </pre>
+      When using -Th2 on the commandline, the double-underscores are not required.
+    </li>
+    <li>__until
+      <pre>
+      <code>
+        __until(condition) {statements;}
+      </code>
+    </pre>
+      A flipped version of while loops - the loop will repeat until the condition
+      becomes true. When using -Th2 on the commandline, the double-underscores are not
+      required.
+    </li>
+    <li>__loop
+      <pre>
+    <code>
+      __loop { statements; }
+    </code>
+  </pre>
+      Generally its better to use while(1){} or for(;;){} instead
+      When using -Th2 on the commandline, the double-underscores are not required.
+    </li>
+  </ul>
+
+  <h3>Basic Types</h3>
+  <h4>entity</h4>
+  <p>Quake's objects. Each one has its own copy of each and every field.
+    Except for the world and players, the only difference between each entity is the
+    contents of its fields.
+    Note that collision and pvs state is tracked invisibly, and can be updated by
+    calling setorigin.</p>
+
+  <h4>float</h4>
+  <p>These are standard IEEE single precision floats.
+    If you are attempting to store bit-values in a float then go no higher than 24
+    bits, failure to adhere to this can result in the lower bits getting forgotten
+    due to precision issues.</p>
+  <p>Float immediates can be specified as decimal (eg: 5.3), or as hex (eg: 0x554336
+    - note the bit limitation means you should stay with 6 hex digits).
+    Numbers with no decimal point are normally assumed to be floats, but if you wish
+    to be explicit then you can simply add a trailing point.</p>
+  <p>Additionally, character codes can be inserted as immediates using eg 'x' for the
+    ascii value of the x glyph.</p>
+  <p>A denormalised float is a very small float with its exponent part set to 0,
+    which is a special case of floats where the mantissa component has no implied
+    leading bit set to 1.
+    These thus have the same representation as an integer with up to 23 bits and can
+    thus be used to manipulate pointers/ents/strings in various hacky ways (as
+    popularised by qccx).
+    Not only are such hacks not recommended due to engine incompatibilties, but many
+    CPUs/binaries are explicitly configured to treat all denormalised floats as 0
+    for performance reasons and so their use isn't recommended even when not
+    exploiting an engine's QCVM, and any operation that implicitly requires
+    denormalised floats will generate warnings (which can be disabled).</p>
+
+  <h4>string</h4>
+  <p>String immediates take the form of eg: "Hello World". Implicit concatenation
+    exists and can be used by simply placing two adjacent immediates.
+    To avoid issues with codepages and unicode conversions, strings should be kept
+    as ascii where possible, this can be achieved with string escapes instead of
+    pasting non-ascii values from an external tool.</p>
+
+  <ul>
+    <li>\\
+      Represents a single backslash character.</li>
+    <li>\"
+      Represents a single double-quote character without closing the string.</li>
+    <li>\'
+      Represents a single apostrophe character.</li>
+    <li>\n
+      Represents a new-line character.</li>
+    <li>\r
+      Represents a carrage-return character. This should only be used at the end
+      of console prints where you wish for the next line to replace the one you
+      just printed, and can be used for progress sprints without flooding the
+      console too much.</li>
+    <li>\s
+      Denotes 'special' text. This is an easy way to write red text without
+      needing to resort to non-ascii source.</li>
+    <li>\0 through \9
+      These represent 'golden' numbers.</li>
+    <li>\x##
+      Represents a single byte with an explicit 8-bit hex value. If your engine is
+      configured to interpret text as utf-8 then this will often result in invalid
+      character encoding, if above 127.</li>
+    <li>\u#
+      Represents a utf-8 encoded character. The # represents multiple hex nibbles.
+      In order to avoid confusion with trailing text, you may need to terminate
+      the string early and resume it again using string concatenation, but another
+      string escape works well too. This should only be used for mods that require
+      engines to interpret text as utf-8.</li>
+    <li>\( \= \)
+      These three represent the open/center/close characters that are typically
+      used for quake's slider glyphs.</li>
+    <li>\< \- \>
+        These three represent the start/middle/end characters of quake's line
+        seperator glyhs.</li>
+  </ul>
+
+  <p>There are a few other escapes, but I cba to document them as I'd rather people
+    just used \x instead.</p>
+  <p>Additionally, FTEQCC supports raw strings.
+    These are specified as eg:
+  <pre><code>R"delim(Your String Here)delim".</code></pre>
+  Any and all text within the two brackets is your string - including any new line
+  characters exactly as they are in the file.
+  Any escapes are ignored, and will appear in the resulting string as-is
+  (you'll see the backslashes in-game).</p>
+  <p>The two 'delim' words in the example must match each other (but can be 0-length)
+    and are used as a way to allow close-bracket+double-quote pairs to exist inside
+    the raw string itself, including nested raw strings (so long as the delimiters
+    differ).
+    Note that file paths in quake should normally always use the more portable
+    forward-slash for path seperators, instead of the microsoft-only backslash
+    seperator.</p>
+  <p>Some engines support internationalisation. This is achieved by replacing all
+    strings defined as e.g. _("foo") according to the contents of a progs.LANG.po
+    file.
+    Mods that use this mechanism will likely also need to enable utf-8 support in
+    the engine, as well as use a unicode font.</p>
+  <p>Strings in the QCVM are nominally considered to be indexes from the start of
+    some string table defined by the progs.dat, however there are many special types
+    of string that are special or flawed.</p>
+
+  <ul>
+    <li>null string
+      The null string is the only string considered null. It is always empty.</li>
+    <li>immediate string
+      This is any string immediate that came from inside the qc.</li>
+    <li>permanent string
+      These are any string that came from parsing map entities.</li>
+    <li>engine string
+      These strings point into engine memory, and their contents may change at any
+      time even when the string reference doesn't. This is why it can be so hard
+      to detect when the player's netname field changes - because the field itself
+      doesn't actually change.</li>
+    <li>zoned/allocated strings
+      These strings are ones that were returned by the strzone builtin (part of
+      the FRIK_FILE extension). These are the ONLY strings that can be safely
+      strunzoned in all engines (some engines may silently ignore the null string
+      for convienience).
+      If your mod mixes permanent strings (or even immediate strings) with
+      allocated strings then you may find yourself with no way to decide whether
+      you need to call strunzone or not. It is recommended to just strzone in your
+      spawn functions etc, despite how ugly that is.
+      Note that allocated strings CANNOT safely be stored in globals in certain
+      engines, at least not if saved games are to load correctly without strunzone
+      crashing on the non-zoned strings loaded from the saved game.</li>
+    <li>temporary string
+      Temp strings are messy and temporary by their very nature.
+      Their behaviour is highly engine-specific. Many engines rotate between 16
+      engine strings (or 1, in the case of vanilla quake), so after the 16th call
+      that returns a tempstring the older tempstrings get overwritten (you can
+      renew the string with strcat, but this is somewhat messy). Do not store them
+      inside globals or fields. Even temporarily storing a tempstring into a
+      global/field can result in warning messages when saving a game.</li>
+  </ul>
+
+  <pre>
+      <code>
+        QS behaviour: Cycles between 16 tempstrings.
+    DP behaviour: Allocates more memory for tempstrings as needed. 
+                Fails if strunzone is called on loaded saved games, spams if
+                tempstrings are still referenced when saving.
+    FTEQW behaviour: Does not distinguish between permanent strings, allocated
+                    strings, nor temporary strings. All three have the exact
+                    same behaviour - strzone is an alias for strcat (and
+                    strunzone is a no-op), and tempstrings are collected only
+                    once they are no longer referenced.
+                    This avoids most savedgame issues.
+      </code>
+    </pre>
+
+  <h4>int / integer</h4>
+  <p>Generally requires opcode extensions.
+    Note that unlike C, QC assumes numeric immediates to be floats.
+    Normally you should use a postfix of i to explicitly make it an int immediate,
+    but you can also enable a specific compiler flag to assume immediates as ints.</p>
+
+  <h4>vector</h4>
+  <p>Vector immediates traditionally take the form of 'x y z', but using [x, y, z]
+    allows formulas and thus simpler argument passing.
+    Note that vector*vector yields a dot-product, while all other operations are
+    per-channel.
+    Normally vectors act a bit like unions and define both 'vec' and 'vec_[x|y|z]'
+    variables allowing for direct channel access, however the _x etc versions are
+    not always available (eg in arrays). The modern way to access individual
+    channels is with eg vec.x instead. Note that array indexing also works, so
+    vec[0] returns the _x component.
+    Dynamic indexes work also, but with the same performance hit as arrays so it is
+    generally best to avoid that if you can.</p>
+
+  <h4>__variant</h4>
+  <p>This type represents an undefined type no larger than a vector, and should
+    normally be used only for function arguments or return value, but can also be
+    used for type punning.</p>
+
+  <h3>Complex Types</h3>
+  <h4>arrays</h4>
+  <p>FTEQCC supports single-dimension arrays.
+<pre><code>float foo[] = {1,2,3,4};</code></pre>
+will thus define a float array and will infer its length as 4.
+If you need to use an explicit length, or you do not wish to initialise the
+array, then you must put the needed length inside the square brackets.
+Note that arrays are 0-based, so an array defined as float foo[2]; can be
+accessed as foo[0] or foo[1], but any other value (including foo[2]) is out of
+bounds. Indexes will be rounded down.
+foo.length can be read if you wish to know how long an array is (especially if
+the length was inferred for some reason)
+Dynamic indexes ARE supported in all cases, however they may come at a
+significant performance loss if you do not have extended opcodes enabled, so it
+is generally preferable to unroll small loops such that constant indexes can be
+used.
+Dynamic lengths are not supported at this time.
+Arrays are also supported within structs, allowing for (clumsy)
+multi-dimensional arrays.</p>
+
+<h4>fields</h4>
+<p>Fields are defined by prefixing the field's type with a dot.
+Every single entity will then have its own instance of the data, accessed via
+    eg: self.myfield
+    <br>
+Fields are assumed to be constants, with any uninitialsed fields reserving space
+in every single entity in order to hold the data. Fields defined as var or
+initialised to the value of another field will NOT consume any space within
+each entity.</p>
+<pre>
+  <code>
+    .float foo; // const, allocates storage.
+    var .float bar = foo;
+    void() fnar =
+    {
+        self.foo = 42;
+        if (self.bar != 42)
+            dprintf("the impossible happened\n");
+    };
+  </code>
+</pre>
+
+<p>Note that field references are variables in their own right.
+They can be defined as arrays, they can be passed to functions etc (eg the find
+builtin depends upon it).
+A word of warning though - field references will not appear in most saved game
+formats. That's probably fine for deathmatch, but if you're using them for
+singleplayer then be sure to initialise them (even if to the value of another).</p>
+
+<h4>functions</h4>
+<p>In QuakeC, functions are both a function reference/variable, and typically a
+function immediate/body, much like a string is both a string reference, and the
+string data itself.
+So function definitions are initialised in basically the same way as any other
+variable, where the function-type syntax is basically just returntype(arglist),
+eg:
+    <pre><code>returntype(arglist) name = functionbody;</code></pre>
+
+    functionbody can then be either some other function, or a function immediate.
+As a special exception for C compatibility, the arglist parenthasis can follow
+the function's name instead, and when the initialiser is an immediate, the
+equals and trailing semi-colon tokens are optional.
+Note that function immediates are what contain the bulk of code, and can only be
+present within the context of a function type - meaning either in a function
+initialisation or via a cast (creating an annonymous function - note that these
+are not safe for saved games, so try to avoid their use in ssqc).
+Because functions are really function references, you can define them as var, 
+and by doing so you can remap/wrap them at any point you wish. function types
+can also be used freely within function arguments or anywhere else.</p>
+
+<pre>
+  <code>
+    void() somename = {}; // QC-style function
+    
+    void somename(void) {} // C-style
+    
+    void() foo = [$newframe, nextfunc] {}; // QC state function ( function
+                                        // contains: self.frame = $newframe; 
+                                        // self.think = nextfunc; 
+                                        // self.nextthink = time+0.1; )
+    
+    var void() dynreference; // uninitialised function reference, for
+                            // dynamically switching functions.
+    
+    var void() dynreference = somename; // initialised function references work
+    
+    void(vector foo, float bar) func = {}; // function with two arguments.
+    
+    void(float foo = 4) func = {}; // function that will be passed 4 for the
+                                // first argument if it is omitted.
+    void(... foo) func = {
+        for(float f = 0; f < foo; f++) 
+            bprint(va_arg(f, string));
+        }; // variable-args function that passes each arg to another.
+        
+    void(optional float foo, ...) func = #0; // name-linked builtin where the
+                                            // first arg may be ommitted but
+                                            // must otherwise be a float, with
+                                            // up to 7 other args.
+                                            
+    void(void) func = #0:foo; // unnumbered-but-named builtin.
+    
+    void(float foo) func : 0; // hexenc builtin syntax
+  </code>
+</pre>
+
+<p>Note that QC can only tell how many arguments were passed using the
+variable-argument argcount form. Any optional arguments that were omitted will
+have undefined values. Any argumentsspecified after an optional argument must be
+omitted if the prior arg is omitted but otherwise must be specified unless they
+are optional themselves, or preinitialised.
+Preinitialised non-optional arguments can be omitted, their preinitialised value
+will be passed in this case. If the argument list is empty (ie: two adjacent
+commas in the call), then the argument's default value will be passed
+automatically regardless of whether the argument is considered optional.
+Builtins can only accept up to 8 args. Non-builtins have a much higher limit.
+Vectors count as 1 argument (and thus allow you to pack additional information).</p>
+
+<p>Structs can be passed but will be counted as
+ceil(sizeof(thestruct)/sizeof(vector)) arguments.
+Named builtins can be used by some (but not all) engines to avoid numbering
+conflicts. Typically these builtins must also be numbered as 0.</p>
+
+<h4>typedef</h4>
+<p><pre><code>typedef type newname;</code></pre>
+    
+Typedefs allow the creation of an alias for types.</p>
+
+<h4>enum / enumflags / strongly typed enums</h4>
+<pre>
+  <code>
+    enum int
+    {
+        FIRST,
+        SECOND,
+        THIRD,
+        NINTH=8
+    };
+  </code>
+</pre>
+
+<p>Provides an easy way to define a set of constants.
+enum: Each name will default to one higher than the previous name, with the
+first defaulting to 0. enumflags: Each name will default to twice the previous
+name, with the first defaulting to 1, ideal for bit flags.
+
+Strongly typed enums are also supported:</p>
+<pre>
+  <code>
+    enum class foo { cake, pie, sauce };
+    enum class bar { banana, sauce, pie };
+  </code>
+</pre>
+<p>Standard enums do not have their own scope. So you could not reuse the names of
+inside constants.</p>
+
+<h4>struct</h4>
+<p>Allows you to define a struct, which is useful for boxing multiple related
+variables.</p>
+<pre>
+  <code>
+    typedef struct
+    {
+        vector rgb;
+        float a;
+    } rgba_t;
+    rgba_t opaque_red = {'1 0 0', 1};
+
+    void(rgba_t c) fillscreen =
+    {
+        drawfill([0,0], screensize, c.rgb, c.a, 0};
+    };
+    void() drawstuff = 
+    {
+        fillscreen(opaque_red);
+    };
+  </code>
+</pre>
+
+<p>These are especially useful when combined with pointers, but can also simplify
+copies.</p>
+
+<h4>union</h4>
+
+<p>Equivelent to structs, except all struct members start at the same offset.
+This can be used for either type punning or compressing mutually-exclusive
+fields inside complex struct layouts. By nesting structs, unions and arrays,
+you can get some quite complex data structures.
+Note that unions and structs define within unions or structs do not need to be
+named. Members from child structs will automatically be accessed as if they were
+part of the containing stuct.</p>
+
+<pre>
+  <code>
+     struct
+    {
+        float type;
+        union
+        {
+            struct
+            {
+                float f;
+                vector bar;
+            };
+            struct
+            {
+                string s[2];
+            };
+        };
+    } foo[8];
+    float() foobar =
+    {
+        if (foo[4].type)
+            return stof(foo[4].s[1]);
+        else
+            return foo[4].f;
+    };
+
+  </code>
+</pre>
+
+<h4>class</h4>
+<pre>
+  <code>
+    class foo : entity
+    {
+        float interval;
+        virtual void() think =
+        {
+            centerprint(enemy, this.message);
+            nextthink = time+interval;
+        };
+        nonvirtual void(enemy e) setEnemy =
+        {
+            enemy = e;
+        };
+        void() foo =
+        {
+        nextthink = time+interval;
+        };
+    };
+    void() someiplayerfunction =
+    {
+        foo myfoo = spawn(foo, message:"Hello World", interval:5);
+        myfoo.setEnemy(self);
+    };
+  </code>
+</pre>
+
+<p>The above is a terrible example, sorry.
+If the parent class is omitted, entity will be assumed.
+Class constructors double up as spawn functions, and the spawn intrisic works
+in the same way - the named members will be set before the constructor is
+called, instead of passing arguments to the constructor (which avoids the need
+for overloads etc). The 'interval' field above is defined as a class field.
+Such class fields are valid ONLY on entities of that class, which allows for
+more efficient memory usage.
+Member functions can be defined as virtual (such functions are technically
+pre-initialised fields, and thus compatible with things like think or touch),
+non-virtual (read: non-inherited), or static (where 'this' cannot be used).
+<br>
+Public, private, protected are parsed like in C++, but ignored.
+Only a single parent type can be inherited, and it must be a class or the
+general entity type.</p>
+
+<h4>pointer</h4>
+<p>(Note: not a keyword) <br>
+  As in C, pointers are defined using an asterisk prefix on the type's name.
+<pre>
+  <code>
+float *ptr;     // define a pointer-to-float
+    ptr = &self.frame;  // obtain the address of a variable
+    *ptr = *ptr + 1;  // access through the pointer (aka: dereference)
+  </code>
+</pre>
+In order to define a field that contains a pointer (instead of a pointer to
+a fieldref), use '.*float ptr;', or you can define the field using a typedefed
+pointer.
+Pointers can be used without qcc extensions, however you can only get the
+address of an entity's field, and you can only write. This is still sufficient
+to rewrite world's fields, but not particuarly useful otherwise.
+It is not possible to pass the address of a local into a child function, due to
+QCVM limitations. As a work around, you can define the local as static or use
+the alloca intrinsic. Generally you should use __[in]out arguments instead.
+Classes can be prototyped with just 'class foo;', but any class-specific fields
+will not be usable until the actual class definition, which can mean that
+methods must have their code defined outside of the class itself.
+A method can include only its prototype within the class, and with the eventual
+method being defined as eg: 'void() classname::methodname = {};'.
+</p>
+
+<h4>Accessors</h4>
+
+<p>accessors are a weird and whacky way to invoke functions in a more friendly way.
+They allow a reference/handle to provide a number of properties that invoke get
+or set functions when used. Many of these functions are excelent candidates for
+inlining...
+A good example is that of setting up a string-buffer type that invokes an
+engine's bufstr_get/set builtins, allowing you to write stringbuffer code as if
+it were simply accessing an array.
+index types can be any type of variable, so eg hash tables can be accessed as:
+<br>
+    hashaccessor["foo"]</p>
+    <p>Here's an example using the string buffers extension:</p>
+    <pre>
+      <code>
+        accessor strbuf : float
+    {
+        inline get float asfloat[float idx] = {
+                return stof(bufstr_get(this, idx));
+            };
+        inline set float asfloat[float idx] = {
+                bufstr_set(this, idx, ftos(value));
+            };
+        
+        // we can get away with directly referencing existing functions/builtins
+        get string[float] = bufstr_get;
+        set string[float] = bufstr_set;
+        get float length = buf_getsize;
+    };
+    void() accessorexample =
+    {
+        // buf_create normally returns a handle in a float
+        strbuf b = (strbuf)buf_create(); 
+        
+        // We can now use b as if it were defined as string b[];
+        // There isn't even a limit to the indexes!
+        b[0] = "This is";
+        b[1] = "a test";
+        b[2] = "of stringbuffer access";
+        // gap!
+        b.asfloat[4] = 4;
+        
+        // loop through them all. Note how the length property invokes
+        // buf_getsize which tells us the maximum valid index.
+        for (float i = 0; i < b.length; i++)
+            print(sprintf("%d: %s\n", i, b[i]));
+        
+        // still needs to be freed though
+        buf_destroy((float)b);
+    };
+      </code>
+    </pre>
+
+    <p>An accessor property defined with an & after the access type specifies that the
+'this' inside the code can actually be written to. Otherwise it should be
+considered const, which is fine in the above case where it is just a handle.
+In set properties, the value to assign is simply called 'value'. If there is
+just a type with no name inside the array, then the used key will be named
+'index'.
+The index type can be anything, so long as it is typedefed.
+Note that eg 'b.foo' is equivelent to 'b["foo"]' when b is a variable of type
+accessor and 'foo' is not a property of b, b has an unnamed property with an
+index type of string, and 'foo' isn't an immediate.
+This is useful with accessors built around hashtables.
+The unnamed property can be a non-array too - such properties can be accessed
+only via eg '*b'.</p>
+</body>
+
+</html>
