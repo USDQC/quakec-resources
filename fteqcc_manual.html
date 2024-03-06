@@ -1155,6 +1155,106 @@ index type of string, and 'foo' isn't an immediate.
 This is useful with accessors built around hashtables.
 The unnamed property can be a non-array too - such properties can be accessed
 only via eg '*b'.</p>
-</body>
 
+<h3>Type Modifiers</h3>
+<h4>const / var</h4>
+<p>Definitions are either constants or variables.
+Initialised globals are normally considered constants, while locals are always
+assumed to be variables (this part differs from vanilla qcc).
+Uninitialised field and function globals are considered const also (const fields
+will be auto-initialised, while functions will generate an error if they are not
+explicitly initialised).</p>
+
+<h4>__unused / noref</h4>
+<p>This variable is probably unused. Don't warn about it.
+These variables may also be stripped completely if they are not referenced
+anywhere.</p>
+
+<h4>__used</h4>
+<p>This variable is actually used somewhere, even if the qcc cannot tell that
+(eg: by the engine). There will be no warnings about it being unused, and it
+will NOT be auto-stripped.</p>
+
+<h4>local</h4>
+<p>Obsolete prefix that means nothing on its own.
+Vanilla QC used this to tell the compiler to expect a variable definition inside
+a function (instead of actual code). However, in FTEQCC this should not normally
+be needed except with certain rare type modifiers.</p>
+
+<h4>static / nonstatic</h4>
+<p>Static globals are visible only within the .qc file in which they are defined.
+Static locals are visible only within the function in which they are defined
+(but also become persistent and do not lose their values between calls - like
+globals). 
+<br>
+Note that static variables use name mangling that might get renamed between
+releases, which can break saved games if you're not careful.</p>
+
+<h4>nosave</h4>
+<p>Globals marked as nosave will not appear in saved games.
+They will thus lose their values in saved games, which might either be
+undesirable, or a clumsy way to detect reloads.
+When the game is reloaded, they will typically revert to the values that were
+set at time=0.2 on account of the weird way that saved games work.
+nosave is recommended for variables that track objects which cannot be reloaded,
+like file handles.</p>
+
+<h4>inline</h4>
+<p>Functions marked as inline will be eligable for inlining for a small performance
+boost. 
+<br>
+FTEQCC's inlining is limited, and should generally only be used for small
+functions (eg ones that exist to just call other functions with a different
+argument order etc).</p>
+<h4>strip / __ignore</h4>
+<p>This variable / function / field is NOT used. Function bodies will be ignored,
+and any definitions will be stripped. If the qcc detects that it is still
+required somewhere, you will get a compile error. This can be used inside
+#defines to create CSQC-only or ssqc-only functions without needing #ifdefs
+inside every single function.</p>
+
+<h4>shared</h4>
+<p>Globals marked as shared will have the same value regardless of which dat it
+was defined in within a single QCVM (read: for mutators, not CSQC).</p>
+
+<h4>optional</h4>
+<p>optional function arguments may be omitted without warnings/errors. Note that
+only the engine can tell how many args were actually passed, so this should
+normally only be used on builtins.
+QC functions should normally use initialised arguments instead. These have
+well-defined values if the argument is ommitted (slightly slower, but avoids the
+need for extra signalling).</p>
+
+<h4>__inout / __in / __out</h4>
+<p>Valid only for function arguments.
+By default, all function arguments are __in arguments. However, if they're
+defined as __inout or __out then any changes the callee made to the argument
+will be written back to the passed value in the caller.
+__out arguments cannot accept constants, nor any other expression that cannot be
+assigned to (like additions etc).
+This mechanism allows a function to return multiple values without needing to
+resort to vectors nor structs nor pointers.</p>
+
+<h4>__weak</h4>
+<p>Weak symbols will not conflict with other definitions of the same variable.
+Weak symbols will be ignored if they are already defined, and replaced if
+followed by a non-weak definition with the same name.</p>
+
+<h4>__wrap</h4>
+<p>Defines a function that is a wrapper for a prior instance of the function with
+the same name.
+There MUST be a function already defined with the same name, you can define one
+as __weak if there is not. If you combine __weak and _wrap on the same function,
+then the function will be silently ignored if there was no prior define.
+Wrappers MUST reference their 'prior' function, but they can do so by discarding
+it, eg: (void)prior;</p>
+
+<h4>__accumulate</h4>
+<p>Accumultate is a more efficient but limited way of combining functions.
+Additional definitions of the function will be concatenated onto the end of the
+prior function. A followed return statement in any of the prior functions will
+prevent any later accumulations from executing - thus an alternative way to
+specify return values is recommended, eg: return = 5;</p>
+
+  </body>
 </html>
