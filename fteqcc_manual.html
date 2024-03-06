@@ -817,6 +817,344 @@ used.
 Dynamic lengths are not supported at this time.
 Arrays are also supported within structs, allowing for (clumsy)
 multi-dimensional arrays.</p>
+
+<h4>fields</h4>
+<p>Fields are defined by prefixing the field's type with a dot.
+Every single entity will then have its own instance of the data, accessed via
+    eg: self.myfield
+    <br>
+Fields are assumed to be constants, with any uninitialsed fields reserving space
+in every single entity in order to hold the data. Fields defined as var or
+initialised to the value of another field will NOT consume any space within
+each entity.</p>
+<pre>
+  <code>
+    .float foo; // const, allocates storage.
+    var .float bar = foo;
+    void() fnar =
+    {
+        self.foo = 42;
+        if (self.bar != 42)
+            dprintf("the impossible happened\n");
+    };
+  </code>
+</pre>
+
+<p>Note that field references are variables in their own right.
+They can be defined as arrays, they can be passed to functions etc (eg the find
+builtin depends upon it).
+A word of warning though - field references will not appear in most saved game
+formats. That's probably fine for deathmatch, but if you're using them for
+singleplayer then be sure to initialise them (even if to the value of another).</p>
+
+<h4>functions</h4>
+<p>In QuakeC, functions are both a function reference/variable, and typically a
+function immediate/body, much like a string is both a string reference, and the
+string data itself.
+So function definitions are initialised in basically the same way as any other
+variable, where the function-type syntax is basically just returntype(arglist),
+eg:
+    <pre><code>returntype(arglist) name = functionbody;</code></pre>
+
+    functionbody can then be either some other function, or a function immediate.
+As a special exception for C compatibility, the arglist parenthasis can follow
+the function's name instead, and when the initialiser is an immediate, the
+equals and trailing semi-colon tokens are optional.
+Note that function immediates are what contain the bulk of code, and can only be
+present within the context of a function type - meaning either in a function
+initialisation or via a cast (creating an annonymous function - note that these
+are not safe for saved games, so try to avoid their use in ssqc).
+Because functions are really function references, you can define them as var, 
+and by doing so you can remap/wrap them at any point you wish. function types
+can also be used freely within function arguments or anywhere else.</p>
+
+<pre>
+  <code>
+    void() somename = {}; // QC-style function
+    
+    void somename(void) {} // C-style
+    
+    void() foo = [$newframe, nextfunc] {}; // QC state function ( function
+                                        // contains: self.frame = $newframe; 
+                                        // self.think = nextfunc; 
+                                        // self.nextthink = time+0.1; )
+    
+    var void() dynreference; // uninitialised function reference, for
+                            // dynamically switching functions.
+    
+    var void() dynreference = somename; // initialised function references work
+    
+    void(vector foo, float bar) func = {}; // function with two arguments.
+    
+    void(float foo = 4) func = {}; // function that will be passed 4 for the
+                                // first argument if it is omitted.
+    void(... foo) func = {
+        for(float f = 0; f < foo; f++) 
+            bprint(va_arg(f, string));
+        }; // variable-args function that passes each arg to another.
+        
+    void(optional float foo, ...) func = #0; // name-linked builtin where the
+                                            // first arg may be ommitted but
+                                            // must otherwise be a float, with
+                                            // up to 7 other args.
+                                            
+    void(void) func = #0:foo; // unnumbered-but-named builtin.
+    
+    void(float foo) func : 0; // hexenc builtin syntax
+  </code>
+</pre>
+
+<p>Note that QC can only tell how many arguments were passed using the
+variable-argument argcount form. Any optional arguments that were omitted will
+have undefined values. Any argumentsspecified after an optional argument must be
+omitted if the prior arg is omitted but otherwise must be specified unless they
+are optional themselves, or preinitialised.
+Preinitialised non-optional arguments can be omitted, their preinitialised value
+will be passed in this case. If the argument list is empty (ie: two adjacent
+commas in the call), then the argument's default value will be passed
+automatically regardless of whether the argument is considered optional.
+Builtins can only accept up to 8 args. Non-builtins have a much higher limit.
+Vectors count as 1 argument (and thus allow you to pack additional information).</p>
+
+<p>Structs can be passed but will be counted as
+ceil(sizeof(thestruct)/sizeof(vector)) arguments.
+Named builtins can be used by some (but not all) engines to avoid numbering
+conflicts. Typically these builtins must also be numbered as 0.</p>
+
+<h4>typedef</h4>
+<p><pre><code>typedef type newname;</code></pre>
+    
+Typedefs allow the creation of an alias for types.</p>
+
+<h4>enum / enumflags / strongly typed enums</h4>
+<pre>
+  <code>
+    enum int
+    {
+        FIRST,
+        SECOND,
+        THIRD,
+        NINTH=8
+    };
+  </code>
+</pre>
+
+<p>Provides an easy way to define a set of constants.
+enum: Each name will default to one higher than the previous name, with the
+first defaulting to 0. enumflags: Each name will default to twice the previous
+name, with the first defaulting to 1, ideal for bit flags.
+
+Strongly typed enums are also supported:</p>
+<pre>
+  <code>
+    enum class foo { cake, pie, sauce };
+    enum class bar { banana, sauce, pie };
+  </code>
+</pre>
+<p>Standard enums do not have their own scope. So you could not reuse the names of
+inside constants.</p>
+
+<h4>struct</h4>
+<p>Allows you to define a struct, which is useful for boxing multiple related
+variables.</p>
+<pre>
+  <code>
+    typedef struct
+    {
+        vector rgb;
+        float a;
+    } rgba_t;
+    rgba_t opaque_red = {'1 0 0', 1};
+
+    void(rgba_t c) fillscreen =
+    {
+        drawfill([0,0], screensize, c.rgb, c.a, 0};
+    };
+    void() drawstuff = 
+    {
+        fillscreen(opaque_red);
+    };
+  </code>
+</pre>
+
+<p>These are especially useful when combined with pointers, but can also simplify
+copies.</p>
+
+<h4>union</h4>
+
+<p>Equivelent to structs, except all struct members start at the same offset.
+This can be used for either type punning or compressing mutually-exclusive
+fields inside complex struct layouts. By nesting structs, unions and arrays,
+you can get some quite complex data structures.
+Note that unions and structs define within unions or structs do not need to be
+named. Members from child structs will automatically be accessed as if they were
+part of the containing stuct.</p>
+
+<pre>
+  <code>
+     struct
+    {
+        float type;
+        union
+        {
+            struct
+            {
+                float f;
+                vector bar;
+            };
+            struct
+            {
+                string s[2];
+            };
+        };
+    } foo[8];
+    float() foobar =
+    {
+        if (foo[4].type)
+            return stof(foo[4].s[1]);
+        else
+            return foo[4].f;
+    };
+
+  </code>
+</pre>
+
+<h4>class</h4>
+<pre>
+  <code>
+    class foo : entity
+    {
+        float interval;
+        virtual void() think =
+        {
+            centerprint(enemy, this.message);
+            nextthink = time+interval;
+        };
+        nonvirtual void(enemy e) setEnemy =
+        {
+            enemy = e;
+        };
+        void() foo =
+        {
+        nextthink = time+interval;
+        };
+    };
+    void() someiplayerfunction =
+    {
+        foo myfoo = spawn(foo, message:"Hello World", interval:5);
+        myfoo.setEnemy(self);
+    };
+  </code>
+</pre>
+
+<p>The above is a terrible example, sorry.
+If the parent class is omitted, entity will be assumed.
+Class constructors double up as spawn functions, and the spawn intrisic works
+in the same way - the named members will be set before the constructor is
+called, instead of passing arguments to the constructor (which avoids the need
+for overloads etc). The 'interval' field above is defined as a class field.
+Such class fields are valid ONLY on entities of that class, which allows for
+more efficient memory usage.
+Member functions can be defined as virtual (such functions are technically
+pre-initialised fields, and thus compatible with things like think or touch),
+non-virtual (read: non-inherited), or static (where 'this' cannot be used).
+<br>
+Public, private, protected are parsed like in C++, but ignored.
+Only a single parent type can be inherited, and it must be a class or the
+general entity type.</p>
+
+<h4>pointer</h4>
+<p>(Note: not a keyword) <br>
+  As in C, pointers are defined using an asterisk prefix on the type's name.
+<pre>
+  <code>
+float *ptr;     // define a pointer-to-float
+    ptr = &self.frame;  // obtain the address of a variable
+    *ptr = *ptr + 1;  // access through the pointer (aka: dereference)
+  </code>
+</pre>
+In order to define a field that contains a pointer (instead of a pointer to
+a fieldref), use '.*float ptr;', or you can define the field using a typedefed
+pointer.
+Pointers can be used without qcc extensions, however you can only get the
+address of an entity's field, and you can only write. This is still sufficient
+to rewrite world's fields, but not particuarly useful otherwise.
+It is not possible to pass the address of a local into a child function, due to
+QCVM limitations. As a work around, you can define the local as static or use
+the alloca intrinsic. Generally you should use __[in]out arguments instead.
+Classes can be prototyped with just 'class foo;', but any class-specific fields
+will not be usable until the actual class definition, which can mean that
+methods must have their code defined outside of the class itself.
+A method can include only its prototype within the class, and with the eventual
+method being defined as eg: 'void() classname::methodname = {};'.
+</p>
+
+<h4>Accessors</h4>
+
+<p>accessors are a weird and whacky way to invoke functions in a more friendly way.
+They allow a reference/handle to provide a number of properties that invoke get
+or set functions when used. Many of these functions are excelent candidates for
+inlining...
+A good example is that of setting up a string-buffer type that invokes an
+engine's bufstr_get/set builtins, allowing you to write stringbuffer code as if
+it were simply accessing an array.
+index types can be any type of variable, so eg hash tables can be accessed as:
+<br>
+    hashaccessor["foo"]</p>
+    <p>Here's an example using the string buffers extension:</p>
+    <pre>
+      <code>
+        accessor strbuf : float
+    {
+        inline get float asfloat[float idx] = {
+                return stof(bufstr_get(this, idx));
+            };
+        inline set float asfloat[float idx] = {
+                bufstr_set(this, idx, ftos(value));
+            };
+        
+        // we can get away with directly referencing existing functions/builtins
+        get string[float] = bufstr_get;
+        set string[float] = bufstr_set;
+        get float length = buf_getsize;
+    };
+    void() accessorexample =
+    {
+        // buf_create normally returns a handle in a float
+        strbuf b = (strbuf)buf_create(); 
+        
+        // We can now use b as if it were defined as string b[];
+        // There isn't even a limit to the indexes!
+        b[0] = "This is";
+        b[1] = "a test";
+        b[2] = "of stringbuffer access";
+        // gap!
+        b.asfloat[4] = 4;
+        
+        // loop through them all. Note how the length property invokes
+        // buf_getsize which tells us the maximum valid index.
+        for (float i = 0; i < b.length; i++)
+            print(sprintf("%d: %s\n", i, b[i]));
+        
+        // still needs to be freed though
+        buf_destroy((float)b);
+    };
+      </code>
+    </pre>
+
+    <p>An accessor property defined with an & after the access type specifies that the
+'this' inside the code can actually be written to. Otherwise it should be
+considered const, which is fine in the above case where it is just a handle.
+In set properties, the value to assign is simply called 'value'. If there is
+just a type with no name inside the array, then the used key will be named
+'index'.
+The index type can be anything, so long as it is typedefed.
+Note that eg 'b.foo' is equivelent to 'b["foo"]' when b is a variable of type
+accessor and 'foo' is not a property of b, b has an unnamed property with an
+index type of string, and 'foo' isn't an immediate.
+This is useful with accessors built around hashtables.
+The unnamed property can be a non-array too - such properties can be accessed
+only via eg '*b'.</p>
 </body>
 
 </html>
