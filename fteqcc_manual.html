@@ -1256,5 +1256,204 @@ prior function. A followed return statement in any of the prior functions will
 prevent any later accumulations from executing - thus an alternative way to
 specify return values is recommended, eg: return = 5;</p>
 
+<h3>Operators</h3>
+<p>Operator precedence follows somewhat complex rules that do NOT match C's
+operator precedence.
+As a general rule, QC is more forgiving, at least if you don't expect C
+precedence, particuarly around the & and | operators.
+<br>
+Operators are listed in rough order of priority.
+Unary operators are normally written with the operator before their argument,
+the exception being post-increment/decrement.</p>
+
+<ul>
+  <p>. field</p>
+  <li>The field operator is context sensitive.
+If the lhs is an entity then the rhs MUST be a field reference.
+If the lhs is a class or struct then the rhs is expected to be a member of that
+class or struct (or from a parent class).
+
+If the lhs is a pointer then it will be dereferenced first.
+(For compatiblity with C, this operator can be written as -> instead.)</li>
+<p>unary ++ and --</p>
+  <li>These operators come in two forms - pre and post.
+For instance, '++foo' preincrements foo, while 'foo--' postdecrements it.
+These change the value by 1, either up or down.
+The pre form changes the value before reading its value as part of the
+expression.
+The post form changes the value AFTER it has been used in the containing
+expression, and may have additional costs in certain situations.</li>
+<p>unary (TYPE) cast</p>
+  <li>Casts can be used to convert a variable or expression to a different basic type.
+Most casts are performed implicitly on assignments (like int->float or vice
+versa), but it can often help to be able to cast directly so that you don't
+need to assign it to something first.
+Some of the explicit-only casts are potentially unsafe. For instance, all
+reference or pointer types can be cast to integers and back.
+This is fundamentally unreliable, but it is available if you think you know what
+you're doing. So as a general rule, if you need casts then you're writing code
+that needs to be tested properly.
+One likely use of casts is for converting classes from a parent type to a child.
+The reverse is safe and performed explicitly, but parent to child has no
+guanrentee that the class actually is the child type, without explicit checks in
+your code. The need for an explicit cast helps remind you that you need to
+verify the classname or equivelent.</li>
+</ul>
+
+<pre>
+  <code>
+    childtype foo = (childtype)parentref;
+  </code>
+</pre>
+
+<p>Note that casting floats to ints provides a convienient way to truncate a float
+towards 0, eg:</p>
+<pre>
+  <code>
+    float f = (int)5.3;
+  </code>
+</pre>
+
+<ul>
+  <p>unary ~ bitwise not</p>
+  <li>Sets any bit that was clear, and clears any bit that was set.
+Note that this exploits Two's complement numbers, and thus will usually result
+in negative numbers. This does not mean that you should try using more than 23
+bits in float-based bitfields, but should be safe so long as the upper 9 bits
+are sign-extended.</li>
+  <p>unary * dereference</p>
+  <li>Dereferencing a pointer means to follow the pointer back to the piece of memory
+that the pointer refers to, either to read or write that memory.
+It is possible to write to pointers without opcode extensions, but not read from
+them.</li>
+  <p>unary & reference</p>
+  <li>Obtains the address (aka: a reference) to the specified value.
+This cannot be used on intermediate values, but can be used on array lookups,
+fields, or globals.
+This operator normally REQUIRES opcode extensions, however &self.skin is valid
+even without, but the resulting pointer should be considered write-only.</li>
+  <p>* multiply</p>
+  <li>Vector * vector is actually a dotproduct.
+That is: (lhs_x*rhs_x)+(lhs_y*rhs_y)+(lhs_z+rhs_z)] and thus results in a single
+float instead of a vector type.
+Otherwise vectors and floats can be mixed, with the vector scaled by the float.</li>
+  <p>/ divide</p>
+  <li>Divides the left hand side by the right.
+Vectors are only supported as the lhs. The rhs must always be a float or int.
+If both arguments are ints then the result will round towards 0.</li>
+  <p>% modulo</p>
+  <li>Performs a division, but returns the remainder (which might be 0).
+This is true even for floats where none of the lhs, rhs, nor the result are
+required to be a whole number.</li>
+  <p> & bitwise and</p>
+  <li>The return value is the set of bits that are set in both the lhs and rhs.
+Vectors can be used (but not mixed).</li>
+  <p>| bitwise or</p>
+  <li>The return value is the set of bits that are set in either the lhs and rhs.
+Vectors can be used (but not mixed). Note that due to floating point precision,
+floats (or vector components) are limited to about 23 bits. Trying to set more
+bits will result in a loss of precision which will typically result in the
+lowest bits being forgotten.</li>
+  <p>^ - bitwise xor</p>
+  <li>The return value is the set of bits that are set in one one of the lhs and rhs,
+with any bits set in both or neither being clear.
+This is useful for toggling individual bits.</li>
+  <p><< left shift</p>
+  <li>Shifts the number to the left. This is better understood in binary.
+The lhs is multiplied by 2 several times (as described by the rhs).
+If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
+is not a whole number, or is negative.
+Cannot be performed on vectors.</li>
+  <p>>> right shift</p>
+  <li>Shifts the number to the right. This is better understood in binary.
+The lhs is divided by 2 several times (as described by the rhs).
+If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
+is not a whole number, or is negative.
+Cannot be performed on vectors.</li>
+  <p> >< crossproduct</p>
+  <li>Only works on vectors. Returns the crossproduct of the two vectors, which is an
+vector that is tangenital to both input vectors. The length of the result is
+scaled by the length of the two inputs. The direction of the resulting vector
+can be flipped by swapping the lhs and rhs values (or just negating the result).</li>
+  <p>+ add</p>
+  <li>Adds the two arguments together.
+Mixing vectors and floats is not supported.</li>
+  <p>- subtract</p>
+  <li>Subtracts the rhs from the lhs.
+Mixing vectors and floats is not supported.</li>
+  <p>== and !=</p>
+  <li>This compares two variables looking for equality. This is not a simple compare,
+and thus null strings will be considered equal to merely empty strings. +0.0 and
+-0.0 will compare as equal, etc.
+== results in 1 when they are equal. != results in 1 when they are not equal.
+Otherwise both result in 0.</li>
+  <p>>= <= < ></p>
+  <li>Numeric comparisons. Valid for floats, ints and pointers, but not vectors, ents,
+fields, functions, etc</li>
+  <p>unary ! logical not</p>
+  <li>Evaluates the truth of its argument, and flips it, resulting in either 1.0 or
++0.0. Empty strings are considered false, vectors are considered in their
+entirety, floats consider -0.0 to be false, otherwise tests for null.</li>
+  <p>= assignment</p>
+  <li>This is the standard assignment operator. This operator accepts any type
+(including structs/unions) except arrays, but the rhs MUST be compatible with
+the lhs type. Assignments and initialisers work a little differently, with
+initialisers having implicit types and thus allowing function bodies or structs
+to be defined without casts.</li>
+  <p>+= -= |= &= &~= ^= *= <<= >>= /=</p>
+  <li>These are special assignment operators that perform an operation on the target.
+For example, 'lhs += rhs' is equivelent to 'lhs = lhs + rhs;'.
+This applies to each operator listed.
+Thus foo *= 4; will multiply foo by 4, and store the result into foo, basically
+'lhs OP= rhs;' is equivelent to 'lhs=lhs OP rhs;'
+(note that &~= is equivelent to TWO operators, specifically
+'lhs = (lhs) & ~(rhs);', but otherwise follows the same form)</li>
+  <p>(+) bitset</p>
+  <li>Equivelent to 'lhs |= rhs;' or 'lhs = lhs | rhs;', changing lhs to a value which
+includes all bits that were set in the rhs.
+This operator is implemented for hexenc compatibility.</li>
+  <p>(-) bitclear</p>
+  <li>Equivelent to 'lhs = lhs & ~rhs;', changing lhs to a value which has no bits
+set that were in the rhs.
+This operator is implemented for hexenc compatibility.</li>
+  <p>ternary ?: conditional</p>
+  <li>Given the line 'result = A?B:C;', the result will be be equal to B ONLY if A is
+true, otherwise equal to C. B may be ommitted, and if so will be equivelent to
+A. Side effects will not be executed in the side that was not taken.</li>
+  <p>&& logical and</p>
+  <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if BOTH sides
+are considered true, and 0.0f if neither or only one is considered true.
+Does NOT early-out - both sides WILL be executed in full. (There is a
+compiler-flag to enable early-out, in which case the lhs will always be
+executed, but the rhs will be skipped if the lhs is true.)
+Truth is a matter of who asks, and this comparison always considers -0.0 to be
+false.</li>
+  <p>|| logical or</p>
+  <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if EITHER side
+is considered true, and 0.0f if neither is considered true.
+Does NOT early-out - both sides WILL be executed in full. (There is a
+compiler-flag to enable early-out, in which case the lhs will always be
+executed, but the rhs will be skipped if the lhs is false.)
+Truth is a matter of who asks, and this comparison always considers -0.0 to be
+false.</li>
+  <p>, list</p>
+  <li>Seperates a list of expressions.
+The following does not apply to argument lists - function call parsing uses
+EVERY argument.
+The return value of 'a,b' is actually just the rhs, but any side effects in the
+lhs will be executed first. This inclues assignments or pre/post-increment
+operators.
+Thus lists are useful only where you want hidden sideeffects.
+<pre>
+<code>
+  vector tmp; vec = ( tmp_x = 5, tmp_y = 4,tmp_z = 7, tmp );
+</code>
+</pre>
+Is equivelent to 'vec = [5,4,7];' and thus has limited use in macros or to
+express multiple statements without the use of a block and any extra indentation
+required by coding style guides.</li>
+</ul>
+
+
   </body>
 </html>
