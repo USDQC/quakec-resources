@@ -801,33 +801,34 @@ is equivelent to
   <h3>Complex Types</h3>
   <h4>arrays</h4>
   <p>FTEQCC supports single-dimension arrays.
-<pre><code>float foo[] = {1,2,3,4};</code></pre>
-will thus define a float array and will infer its length as 4.
-If you need to use an explicit length, or you do not wish to initialise the
-array, then you must put the needed length inside the square brackets.
-Note that arrays are 0-based, so an array defined as float foo[2]; can be
-accessed as foo[0] or foo[1], but any other value (including foo[2]) is out of
-bounds. Indexes will be rounded down.
-foo.length can be read if you wish to know how long an array is (especially if
-the length was inferred for some reason)
-Dynamic indexes ARE supported in all cases, however they may come at a
-significant performance loss if you do not have extended opcodes enabled, so it
-is generally preferable to unroll small loops such that constant indexes can be
-used.
-Dynamic lengths are not supported at this time.
-Arrays are also supported within structs, allowing for (clumsy)
-multi-dimensional arrays.</p>
+  <pre><code>float foo[] = {1,2,3,4};</code></pre>
+  will thus define a float array and will infer its length as 4.
+  If you need to use an explicit length, or you do not wish to initialise the
+  array, then you must put the needed length inside the square brackets.
+  Note that arrays are 0-based, so an array defined as float foo[2]; can be
+  accessed as foo[0] or foo[1], but any other value (including foo[2]) is out of
+  bounds. Indexes will be rounded down.
+  foo.length can be read if you wish to know how long an array is (especially if
+  the length was inferred for some reason)
+  Dynamic indexes ARE supported in all cases, however they may come at a
+  significant performance loss if you do not have extended opcodes enabled, so it
+  is generally preferable to unroll small loops such that constant indexes can be
+  used.
+  Dynamic lengths are not supported at this time.
+  Arrays are also supported within structs, allowing for (clumsy)
+  multi-dimensional arrays.</p>
 
-<h4>fields</h4>
-<p>Fields are defined by prefixing the field's type with a dot.
-Every single entity will then have its own instance of the data, accessed via
+  <h4>fields</h4>
+  <p>Fields are defined by prefixing the field's type with a dot.
+    Every single entity will then have its own instance of the data, accessed via
     eg: self.myfield
     <br>
-Fields are assumed to be constants, with any uninitialsed fields reserving space
-in every single entity in order to hold the data. Fields defined as var or
-initialised to the value of another field will NOT consume any space within
-each entity.</p>
-<pre>
+    Fields are assumed to be constants, with any uninitialsed fields reserving space
+    in every single entity in order to hold the data. Fields defined as var or
+    initialised to the value of another field will NOT consume any space within
+    each entity.
+  </p>
+  <pre>
   <code>
     .float foo; // const, allocates storage.
     var .float bar = foo;
@@ -840,35 +841,35 @@ each entity.</p>
   </code>
 </pre>
 
-<p>Note that field references are variables in their own right.
-They can be defined as arrays, they can be passed to functions etc (eg the find
-builtin depends upon it).
-A word of warning though - field references will not appear in most saved game
-formats. That's probably fine for deathmatch, but if you're using them for
-singleplayer then be sure to initialise them (even if to the value of another).</p>
+  <p>Note that field references are variables in their own right.
+    They can be defined as arrays, they can be passed to functions etc (eg the find
+    builtin depends upon it).
+    A word of warning though - field references will not appear in most saved game
+    formats. That's probably fine for deathmatch, but if you're using them for
+    singleplayer then be sure to initialise them (even if to the value of another).</p>
 
-<h4>functions</h4>
-<p>In QuakeC, functions are both a function reference/variable, and typically a
-function immediate/body, much like a string is both a string reference, and the
-string data itself.
-So function definitions are initialised in basically the same way as any other
-variable, where the function-type syntax is basically just returntype(arglist),
-eg:
-    <pre><code>returntype(arglist) name = functionbody;</code></pre>
+  <h4>functions</h4>
+  <p>In QuakeC, functions are both a function reference/variable, and typically a
+    function immediate/body, much like a string is both a string reference, and the
+    string data itself.
+    So function definitions are initialised in basically the same way as any other
+    variable, where the function-type syntax is basically just returntype(arglist),
+    eg:
+  <pre><code>returntype(arglist) name = functionbody;</code></pre>
 
-    functionbody can then be either some other function, or a function immediate.
-As a special exception for C compatibility, the arglist parenthasis can follow
-the function's name instead, and when the initialiser is an immediate, the
-equals and trailing semi-colon tokens are optional.
-Note that function immediates are what contain the bulk of code, and can only be
-present within the context of a function type - meaning either in a function
-initialisation or via a cast (creating an annonymous function - note that these
-are not safe for saved games, so try to avoid their use in ssqc).
-Because functions are really function references, you can define them as var, 
-and by doing so you can remap/wrap them at any point you wish. function types
-can also be used freely within function arguments or anywhere else.</p>
+  functionbody can then be either some other function, or a function immediate.
+  As a special exception for C compatibility, the arglist parenthasis can follow
+  the function's name instead, and when the initialiser is an immediate, the
+  equals and trailing semi-colon tokens are optional.
+  Note that function immediates are what contain the bulk of code, and can only be
+  present within the context of a function type - meaning either in a function
+  initialisation or via a cast (creating an annonymous function - note that these
+  are not safe for saved games, so try to avoid their use in ssqc).
+  Because functions are really function references, you can define them as var,
+  and by doing so you can remap/wrap them at any point you wish. function types
+  can also be used freely within function arguments or anywhere else.</p>
 
-<pre>
+  <pre>
   <code>
     void() somename = {}; // QC-style function
     
@@ -904,30 +905,31 @@ can also be used freely within function arguments or anywhere else.</p>
   </code>
 </pre>
 
-<p>Note that QC can only tell how many arguments were passed using the
-variable-argument argcount form. Any optional arguments that were omitted will
-have undefined values. Any argumentsspecified after an optional argument must be
-omitted if the prior arg is omitted but otherwise must be specified unless they
-are optional themselves, or preinitialised.
-Preinitialised non-optional arguments can be omitted, their preinitialised value
-will be passed in this case. If the argument list is empty (ie: two adjacent
-commas in the call), then the argument's default value will be passed
-automatically regardless of whether the argument is considered optional.
-Builtins can only accept up to 8 args. Non-builtins have a much higher limit.
-Vectors count as 1 argument (and thus allow you to pack additional information).</p>
+  <p>Note that QC can only tell how many arguments were passed using the
+    variable-argument argcount form. Any optional arguments that were omitted will
+    have undefined values. Any argumentsspecified after an optional argument must be
+    omitted if the prior arg is omitted but otherwise must be specified unless they
+    are optional themselves, or preinitialised.
+    Preinitialised non-optional arguments can be omitted, their preinitialised value
+    will be passed in this case. If the argument list is empty (ie: two adjacent
+    commas in the call), then the argument's default value will be passed
+    automatically regardless of whether the argument is considered optional.
+    Builtins can only accept up to 8 args. Non-builtins have a much higher limit.
+    Vectors count as 1 argument (and thus allow you to pack additional information).</p>
 
-<p>Structs can be passed but will be counted as
-ceil(sizeof(thestruct)/sizeof(vector)) arguments.
-Named builtins can be used by some (but not all) engines to avoid numbering
-conflicts. Typically these builtins must also be numbered as 0.</p>
+  <p>Structs can be passed but will be counted as
+    ceil(sizeof(thestruct)/sizeof(vector)) arguments.
+    Named builtins can be used by some (but not all) engines to avoid numbering
+    conflicts. Typically these builtins must also be numbered as 0.</p>
 
-<h4>typedef</h4>
-<p><pre><code>typedef type newname;</code></pre>
-    
-Typedefs allow the creation of an alias for types.</p>
+  <h4>typedef</h4>
+  <p>
+  <pre><code>typedef type newname;</code></pre>
 
-<h4>enum / enumflags / strongly typed enums</h4>
-<pre>
+  Typedefs allow the creation of an alias for types.</p>
+
+  <h4>enum / enumflags / strongly typed enums</h4>
+  <pre>
   <code>
     enum int
     {
@@ -939,25 +941,25 @@ Typedefs allow the creation of an alias for types.</p>
   </code>
 </pre>
 
-<p>Provides an easy way to define a set of constants.
-enum: Each name will default to one higher than the previous name, with the
-first defaulting to 0. enumflags: Each name will default to twice the previous
-name, with the first defaulting to 1, ideal for bit flags.
+  <p>Provides an easy way to define a set of constants.
+    enum: Each name will default to one higher than the previous name, with the
+    first defaulting to 0. enumflags: Each name will default to twice the previous
+    name, with the first defaulting to 1, ideal for bit flags.
 
-Strongly typed enums are also supported:</p>
-<pre>
+    Strongly typed enums are also supported:</p>
+  <pre>
   <code>
     enum class foo { cake, pie, sauce };
     enum class bar { banana, sauce, pie };
   </code>
 </pre>
-<p>Standard enums do not have their own scope. So you could not reuse the names of
-inside constants.</p>
+  <p>Standard enums do not have their own scope. So you could not reuse the names of
+    inside constants.</p>
 
-<h4>struct</h4>
-<p>Allows you to define a struct, which is useful for boxing multiple related
-variables.</p>
-<pre>
+  <h4>struct</h4>
+  <p>Allows you to define a struct, which is useful for boxing multiple related
+    variables.</p>
+  <pre>
   <code>
     typedef struct
     {
@@ -977,20 +979,20 @@ variables.</p>
   </code>
 </pre>
 
-<p>These are especially useful when combined with pointers, but can also simplify
-copies.</p>
+  <p>These are especially useful when combined with pointers, but can also simplify
+    copies.</p>
 
-<h4>union</h4>
+  <h4>union</h4>
 
-<p>Equivelent to structs, except all struct members start at the same offset.
-This can be used for either type punning or compressing mutually-exclusive
-fields inside complex struct layouts. By nesting structs, unions and arrays,
-you can get some quite complex data structures.
-Note that unions and structs define within unions or structs do not need to be
-named. Members from child structs will automatically be accessed as if they were
-part of the containing stuct.</p>
+  <p>Equivelent to structs, except all struct members start at the same offset.
+    This can be used for either type punning or compressing mutually-exclusive
+    fields inside complex struct layouts. By nesting structs, unions and arrays,
+    you can get some quite complex data structures.
+    Note that unions and structs define within unions or structs do not need to be
+    named. Members from child structs will automatically be accessed as if they were
+    part of the containing stuct.</p>
 
-<pre>
+  <pre>
   <code>
      struct
     {
@@ -1019,8 +1021,8 @@ part of the containing stuct.</p>
   </code>
 </pre>
 
-<h4>class</h4>
-<pre>
+  <h4>class</h4>
+  <pre>
   <code>
     class foo : entity
     {
@@ -1047,62 +1049,64 @@ part of the containing stuct.</p>
   </code>
 </pre>
 
-<p>The above is a terrible example, sorry.
-If the parent class is omitted, entity will be assumed.
-Class constructors double up as spawn functions, and the spawn intrisic works
-in the same way - the named members will be set before the constructor is
-called, instead of passing arguments to the constructor (which avoids the need
-for overloads etc). The 'interval' field above is defined as a class field.
-Such class fields are valid ONLY on entities of that class, which allows for
-more efficient memory usage.
-Member functions can be defined as virtual (such functions are technically
-pre-initialised fields, and thus compatible with things like think or touch),
-non-virtual (read: non-inherited), or static (where 'this' cannot be used).
-<br>
-Public, private, protected are parsed like in C++, but ignored.
-Only a single parent type can be inherited, and it must be a class or the
-general entity type.</p>
+  <p>The above is a terrible example, sorry.
+    If the parent class is omitted, entity will be assumed.
+    Class constructors double up as spawn functions, and the spawn intrisic works
+    in the same way - the named members will be set before the constructor is
+    called, instead of passing arguments to the constructor (which avoids the need
+    for overloads etc). The 'interval' field above is defined as a class field.
+    Such class fields are valid ONLY on entities of that class, which allows for
+    more efficient memory usage.
+    Member functions can be defined as virtual (such functions are technically
+    pre-initialised fields, and thus compatible with things like think or touch),
+    non-virtual (read: non-inherited), or static (where 'this' cannot be used).
+    <br>
+    Public, private, protected are parsed like in C++, but ignored.
+    Only a single parent type can be inherited, and it must be a class or the
+    general entity type.
+  </p>
 
-<h4>pointer</h4>
-<p>(Note: not a keyword) <br>
-  As in C, pointers are defined using an asterisk prefix on the type's name.
-<pre>
+  <h4>pointer</h4>
+  <p>(Note: not a keyword) <br>
+    As in C, pointers are defined using an asterisk prefix on the type's name.
+  <pre>
   <code>
 float *ptr;     // define a pointer-to-float
     ptr = &self.frame;  // obtain the address of a variable
     *ptr = *ptr + 1;  // access through the pointer (aka: dereference)
   </code>
 </pre>
-In order to define a field that contains a pointer (instead of a pointer to
-a fieldref), use '.*float ptr;', or you can define the field using a typedefed
-pointer.
-Pointers can be used without qcc extensions, however you can only get the
-address of an entity's field, and you can only write. This is still sufficient
-to rewrite world's fields, but not particuarly useful otherwise.
-It is not possible to pass the address of a local into a child function, due to
-QCVM limitations. As a work around, you can define the local as static or use
-the alloca intrinsic. Generally you should use __[in]out arguments instead.
-Classes can be prototyped with just 'class foo;', but any class-specific fields
-will not be usable until the actual class definition, which can mean that
-methods must have their code defined outside of the class itself.
-A method can include only its prototype within the class, and with the eventual
-method being defined as eg: 'void() classname::methodname = {};'.
-</p>
+  In order to define a field that contains a pointer (instead of a pointer to
+  a fieldref), use '.*float ptr;', or you can define the field using a typedefed
+  pointer.
+  Pointers can be used without qcc extensions, however you can only get the
+  address of an entity's field, and you can only write. This is still sufficient
+  to rewrite world's fields, but not particuarly useful otherwise.
+  It is not possible to pass the address of a local into a child function, due to
+  QCVM limitations. As a work around, you can define the local as static or use
+  the alloca intrinsic. Generally you should use __[in]out arguments instead.
+  Classes can be prototyped with just 'class foo;', but any class-specific fields
+  will not be usable until the actual class definition, which can mean that
+  methods must have their code defined outside of the class itself.
+  A method can include only its prototype within the class, and with the eventual
+  method being defined as eg: 'void() classname::methodname = {};'.
+  </p>
 
-<h4>Accessors</h4>
+  <h4>Accessors</h4>
 
-<p>accessors are a weird and whacky way to invoke functions in a more friendly way.
-They allow a reference/handle to provide a number of properties that invoke get
-or set functions when used. Many of these functions are excelent candidates for
-inlining...
-A good example is that of setting up a string-buffer type that invokes an
-engine's bufstr_get/set builtins, allowing you to write stringbuffer code as if
-it were simply accessing an array.
-index types can be any type of variable, so eg hash tables can be accessed as:
-<br>
-    hashaccessor["foo"]</p>
-    <p>Here's an example using the string buffers extension:</p>
-    <pre>
+  <p>accessors are a weird and whacky way to invoke functions in a more friendly way.
+    They allow a reference/handle to provide a number of properties that invoke get
+    or set functions when used. Many of these functions are excelent candidates for
+    inlining...
+    A good example is that of setting up a string-buffer type that invokes an
+    engine's bufstr_get/set builtins, allowing you to write stringbuffer code as if
+    it were simply accessing an array.
+    index types can be any type of variable, so eg hash tables can be accessed as:
+    <br>
+    hashaccessor["foo"]
+  </p>
+  <p>Here's an example using the string buffers extension:</p>
+  <pre>
       <code>
         accessor strbuf : float
     {
@@ -1142,318 +1146,434 @@ index types can be any type of variable, so eg hash tables can be accessed as:
       </code>
     </pre>
 
-    <p>An accessor property defined with an & after the access type specifies that the
-'this' inside the code can actually be written to. Otherwise it should be
-considered const, which is fine in the above case where it is just a handle.
-In set properties, the value to assign is simply called 'value'. If there is
-just a type with no name inside the array, then the used key will be named
-'index'.
-The index type can be anything, so long as it is typedefed.
-Note that eg 'b.foo' is equivelent to 'b["foo"]' when b is a variable of type
-accessor and 'foo' is not a property of b, b has an unnamed property with an
-index type of string, and 'foo' isn't an immediate.
-This is useful with accessors built around hashtables.
-The unnamed property can be a non-array too - such properties can be accessed
-only via eg '*b'.</p>
+  <p>An accessor property defined with an & after the access type specifies that the
+    'this' inside the code can actually be written to. Otherwise it should be
+    considered const, which is fine in the above case where it is just a handle.
+    In set properties, the value to assign is simply called 'value'. If there is
+    just a type with no name inside the array, then the used key will be named
+    'index'.
+    The index type can be anything, so long as it is typedefed.
+    Note that eg 'b.foo' is equivelent to 'b["foo"]' when b is a variable of type
+    accessor and 'foo' is not a property of b, b has an unnamed property with an
+    index type of string, and 'foo' isn't an immediate.
+    This is useful with accessors built around hashtables.
+    The unnamed property can be a non-array too - such properties can be accessed
+    only via eg '*b'.</p>
 
-<h3>Type Modifiers</h3>
-<h4>const / var</h4>
-<p>Definitions are either constants or variables.
-Initialised globals are normally considered constants, while locals are always
-assumed to be variables (this part differs from vanilla qcc).
-Uninitialised field and function globals are considered const also (const fields
-will be auto-initialised, while functions will generate an error if they are not
-explicitly initialised).</p>
+  <h3>Type Modifiers</h3>
+  <h4>const / var</h4>
+  <p>Definitions are either constants or variables.
+    Initialised globals are normally considered constants, while locals are always
+    assumed to be variables (this part differs from vanilla qcc).
+    Uninitialised field and function globals are considered const also (const fields
+    will be auto-initialised, while functions will generate an error if they are not
+    explicitly initialised).</p>
 
-<h4>__unused / noref</h4>
-<p>This variable is probably unused. Don't warn about it.
-These variables may also be stripped completely if they are not referenced
-anywhere.</p>
+  <h4>__unused / noref</h4>
+  <p>This variable is probably unused. Don't warn about it.
+    These variables may also be stripped completely if they are not referenced
+    anywhere.</p>
 
-<h4>__used</h4>
-<p>This variable is actually used somewhere, even if the qcc cannot tell that
-(eg: by the engine). There will be no warnings about it being unused, and it
-will NOT be auto-stripped.</p>
+  <h4>__used</h4>
+  <p>This variable is actually used somewhere, even if the qcc cannot tell that
+    (eg: by the engine). There will be no warnings about it being unused, and it
+    will NOT be auto-stripped.</p>
 
-<h4>local</h4>
-<p>Obsolete prefix that means nothing on its own.
-Vanilla QC used this to tell the compiler to expect a variable definition inside
-a function (instead of actual code). However, in FTEQCC this should not normally
-be needed except with certain rare type modifiers.</p>
+  <h4>local</h4>
+  <p>Obsolete prefix that means nothing on its own.
+    Vanilla QC used this to tell the compiler to expect a variable definition inside
+    a function (instead of actual code). However, in FTEQCC this should not normally
+    be needed except with certain rare type modifiers.</p>
 
-<h4>static / nonstatic</h4>
-<p>Static globals are visible only within the .qc file in which they are defined.
-Static locals are visible only within the function in which they are defined
-(but also become persistent and do not lose their values between calls - like
-globals). 
-<br>
-Note that static variables use name mangling that might get renamed between
-releases, which can break saved games if you're not careful.</p>
+  <h4>static / nonstatic</h4>
+  <p>Static globals are visible only within the .qc file in which they are defined.
+    Static locals are visible only within the function in which they are defined
+    (but also become persistent and do not lose their values between calls - like
+    globals).
+    <br>
+    Note that static variables use name mangling that might get renamed between
+    releases, which can break saved games if you're not careful.
+  </p>
 
-<h4>nosave</h4>
-<p>Globals marked as nosave will not appear in saved games.
-They will thus lose their values in saved games, which might either be
-undesirable, or a clumsy way to detect reloads.
-When the game is reloaded, they will typically revert to the values that were
-set at time=0.2 on account of the weird way that saved games work.
-nosave is recommended for variables that track objects which cannot be reloaded,
-like file handles.</p>
+  <h4>nosave</h4>
+  <p>Globals marked as nosave will not appear in saved games.
+    They will thus lose their values in saved games, which might either be
+    undesirable, or a clumsy way to detect reloads.
+    When the game is reloaded, they will typically revert to the values that were
+    set at time=0.2 on account of the weird way that saved games work.
+    nosave is recommended for variables that track objects which cannot be reloaded,
+    like file handles.</p>
 
-<h4>inline</h4>
-<p>Functions marked as inline will be eligable for inlining for a small performance
-boost. 
-<br>
-FTEQCC's inlining is limited, and should generally only be used for small
-functions (eg ones that exist to just call other functions with a different
-argument order etc).</p>
-<h4>strip / __ignore</h4>
-<p>This variable / function / field is NOT used. Function bodies will be ignored,
-and any definitions will be stripped. If the qcc detects that it is still
-required somewhere, you will get a compile error. This can be used inside
-#defines to create CSQC-only or ssqc-only functions without needing #ifdefs
-inside every single function.</p>
+  <h4>inline</h4>
+  <p>Functions marked as inline will be eligable for inlining for a small performance
+    boost.
+    <br>
+    FTEQCC's inlining is limited, and should generally only be used for small
+    functions (eg ones that exist to just call other functions with a different
+    argument order etc).
+  </p>
+  <h4>strip / __ignore</h4>
+  <p>This variable / function / field is NOT used. Function bodies will be ignored,
+    and any definitions will be stripped. If the qcc detects that it is still
+    required somewhere, you will get a compile error. This can be used inside
+    #defines to create CSQC-only or ssqc-only functions without needing #ifdefs
+    inside every single function.</p>
 
-<h4>shared</h4>
-<p>Globals marked as shared will have the same value regardless of which dat it
-was defined in within a single QCVM (read: for mutators, not CSQC).</p>
+  <h4>shared</h4>
+  <p>Globals marked as shared will have the same value regardless of which dat it
+    was defined in within a single QCVM (read: for mutators, not CSQC).</p>
 
-<h4>optional</h4>
-<p>optional function arguments may be omitted without warnings/errors. Note that
-only the engine can tell how many args were actually passed, so this should
-normally only be used on builtins.
-QC functions should normally use initialised arguments instead. These have
-well-defined values if the argument is ommitted (slightly slower, but avoids the
-need for extra signalling).</p>
+  <h4>optional</h4>
+  <p>optional function arguments may be omitted without warnings/errors. Note that
+    only the engine can tell how many args were actually passed, so this should
+    normally only be used on builtins.
+    QC functions should normally use initialised arguments instead. These have
+    well-defined values if the argument is ommitted (slightly slower, but avoids the
+    need for extra signalling).</p>
 
-<h4>__inout / __in / __out</h4>
-<p>Valid only for function arguments.
-By default, all function arguments are __in arguments. However, if they're
-defined as __inout or __out then any changes the callee made to the argument
-will be written back to the passed value in the caller.
-__out arguments cannot accept constants, nor any other expression that cannot be
-assigned to (like additions etc).
-This mechanism allows a function to return multiple values without needing to
-resort to vectors nor structs nor pointers.</p>
+  <h4>__inout / __in / __out</h4>
+  <p>Valid only for function arguments.
+    By default, all function arguments are __in arguments. However, if they're
+    defined as __inout or __out then any changes the callee made to the argument
+    will be written back to the passed value in the caller.
+    __out arguments cannot accept constants, nor any other expression that cannot be
+    assigned to (like additions etc).
+    This mechanism allows a function to return multiple values without needing to
+    resort to vectors nor structs nor pointers.</p>
 
-<h4>__weak</h4>
-<p>Weak symbols will not conflict with other definitions of the same variable.
-Weak symbols will be ignored if they are already defined, and replaced if
-followed by a non-weak definition with the same name.</p>
+  <h4>__weak</h4>
+  <p>Weak symbols will not conflict with other definitions of the same variable.
+    Weak symbols will be ignored if they are already defined, and replaced if
+    followed by a non-weak definition with the same name.</p>
 
-<h4>__wrap</h4>
-<p>Defines a function that is a wrapper for a prior instance of the function with
-the same name.
-There MUST be a function already defined with the same name, you can define one
-as __weak if there is not. If you combine __weak and _wrap on the same function,
-then the function will be silently ignored if there was no prior define.
-Wrappers MUST reference their 'prior' function, but they can do so by discarding
-it, eg: (void)prior;</p>
+  <h4>__wrap</h4>
+  <p>Defines a function that is a wrapper for a prior instance of the function with
+    the same name.
+    There MUST be a function already defined with the same name, you can define one
+    as __weak if there is not. If you combine __weak and _wrap on the same function,
+    then the function will be silently ignored if there was no prior define.
+    Wrappers MUST reference their 'prior' function, but they can do so by discarding
+    it, eg: (void)prior;</p>
 
-<h4>__accumulate</h4>
-<p>Accumultate is a more efficient but limited way of combining functions.
-Additional definitions of the function will be concatenated onto the end of the
-prior function. A followed return statement in any of the prior functions will
-prevent any later accumulations from executing - thus an alternative way to
-specify return values is recommended, eg: return = 5;</p>
+  <h4>__accumulate</h4>
+  <p>Accumultate is a more efficient but limited way of combining functions.
+    Additional definitions of the function will be concatenated onto the end of the
+    prior function. A followed return statement in any of the prior functions will
+    prevent any later accumulations from executing - thus an alternative way to
+    specify return values is recommended, eg: return = 5;</p>
 
-<h3>Operators</h3>
-<p>Operator precedence follows somewhat complex rules that do NOT match C's
-operator precedence.
-As a general rule, QC is more forgiving, at least if you don't expect C
-precedence, particuarly around the & and | operators.
-<br>
-Operators are listed in rough order of priority.
-Unary operators are normally written with the operator before their argument,
-the exception being post-increment/decrement.</p>
+  <h3>Operators</h3>
+  <p>Operator precedence follows somewhat complex rules that do NOT match C's
+    operator precedence.
+    As a general rule, QC is more forgiving, at least if you don't expect C
+    precedence, particuarly around the & and | operators.
+    <br>
+    Operators are listed in rough order of priority.
+    Unary operators are normally written with the operator before their argument,
+    the exception being post-increment/decrement.
+  </p>
 
-<ul>
-  <p>. field</p>
-  <li>The field operator is context sensitive.
-If the lhs is an entity then the rhs MUST be a field reference.
-If the lhs is a class or struct then the rhs is expected to be a member of that
-class or struct (or from a parent class).
+  <ul>
+    <li>. field<br>
+      The field operator is context sensitive.
+      If the lhs is an entity then the rhs MUST be a field reference.
+      If the lhs is a class or struct then the rhs is expected to be a member of that
+      class or struct (or from a parent class).
 
-If the lhs is a pointer then it will be dereferenced first.
-(For compatiblity with C, this operator can be written as -> instead.)</li>
-<p>unary ++ and --</p>
-  <li>These operators come in two forms - pre and post.
-For instance, '++foo' preincrements foo, while 'foo--' postdecrements it.
-These change the value by 1, either up or down.
-The pre form changes the value before reading its value as part of the
-expression.
-The post form changes the value AFTER it has been used in the containing
-expression, and may have additional costs in certain situations.</li>
-<p>unary (TYPE) cast</p>
-  <li>Casts can be used to convert a variable or expression to a different basic type.
-Most casts are performed implicitly on assignments (like int->float or vice
-versa), but it can often help to be able to cast directly so that you don't
-need to assign it to something first.
-Some of the explicit-only casts are potentially unsafe. For instance, all
-reference or pointer types can be cast to integers and back.
-This is fundamentally unreliable, but it is available if you think you know what
-you're doing. So as a general rule, if you need casts then you're writing code
-that needs to be tested properly.
-One likely use of casts is for converting classes from a parent type to a child.
-The reverse is safe and performed explicitly, but parent to child has no
-guanrentee that the class actually is the child type, without explicit checks in
-your code. The need for an explicit cast helps remind you that you need to
-verify the classname or equivelent.</li>
-</ul>
+      If the lhs is a pointer then it will be dereferenced first.
+      (For compatiblity with C, this operator can be written as -> instead.)</li>
+    unary ++ and --<br>
+    <li>These operators come in two forms - pre and post.
+      For instance, '++foo' preincrements foo, while 'foo--' postdecrements it.
+      These change the value by 1, either up or down.
+      The pre form changes the value before reading its value as part of the
+      expression.
+      The post form changes the value AFTER it has been used in the containing
+      expression, and may have additional costs in certain situations.</li>
+    unary (TYPE) cast<br>
+    <li>Casts can be used to convert a variable or expression to a different basic type.
+      Most casts are performed implicitly on assignments (like int->float or vice
+      versa), but it can often help to be able to cast directly so that you don't
+      need to assign it to something first.
+      Some of the explicit-only casts are potentially unsafe. For instance, all
+      reference or pointer types can be cast to integers and back.
+      This is fundamentally unreliable, but it is available if you think you know what
+      you're doing. So as a general rule, if you need casts then you're writing code
+      that needs to be tested properly.
+      One likely use of casts is for converting classes from a parent type to a child.
+      The reverse is safe and performed explicitly, but parent to child has no
+      guanrentee that the class actually is the child type, without explicit checks in
+      your code. The need for an explicit cast helps remind you that you need to
+      verify the classname or equivelent.</li>
+  </ul>
 
-<pre>
+  <pre>
   <code>
     childtype foo = (childtype)parentref;
   </code>
 </pre>
 
-<p>Note that casting floats to ints provides a convienient way to truncate a float
-towards 0, eg:</p>
-<pre>
+  <p>Note that casting floats to ints provides a convienient way to truncate a float
+    towards 0, eg:</p>
+  <pre>
   <code>
     float f = (int)5.3;
   </code>
 </pre>
 
-<ul>
-  <p>unary ~ bitwise not</p>
-  <li>Sets any bit that was clear, and clears any bit that was set.
-Note that this exploits Two's complement numbers, and thus will usually result
-in negative numbers. This does not mean that you should try using more than 23
-bits in float-based bitfields, but should be safe so long as the upper 9 bits
-are sign-extended.</li>
-  <p>unary * dereference</p>
-  <li>Dereferencing a pointer means to follow the pointer back to the piece of memory
-that the pointer refers to, either to read or write that memory.
-It is possible to write to pointers without opcode extensions, but not read from
-them.</li>
-  <p>unary & reference</p>
-  <li>Obtains the address (aka: a reference) to the specified value.
-This cannot be used on intermediate values, but can be used on array lookups,
-fields, or globals.
-This operator normally REQUIRES opcode extensions, however &self.skin is valid
-even without, but the resulting pointer should be considered write-only.</li>
-  <p>* multiply</p>
-  <li>Vector * vector is actually a dotproduct.
-That is: (lhs_x*rhs_x)+(lhs_y*rhs_y)+(lhs_z+rhs_z)] and thus results in a single
-float instead of a vector type.
-Otherwise vectors and floats can be mixed, with the vector scaled by the float.</li>
-  <p>/ divide</p>
-  <li>Divides the left hand side by the right.
-Vectors are only supported as the lhs. The rhs must always be a float or int.
-If both arguments are ints then the result will round towards 0.</li>
-  <p>% modulo</p>
-  <li>Performs a division, but returns the remainder (which might be 0).
-This is true even for floats where none of the lhs, rhs, nor the result are
-required to be a whole number.</li>
-  <p> & bitwise and</p>
-  <li>The return value is the set of bits that are set in both the lhs and rhs.
-Vectors can be used (but not mixed).</li>
-  <p>| bitwise or</p>
-  <li>The return value is the set of bits that are set in either the lhs and rhs.
-Vectors can be used (but not mixed). Note that due to floating point precision,
-floats (or vector components) are limited to about 23 bits. Trying to set more
-bits will result in a loss of precision which will typically result in the
-lowest bits being forgotten.</li>
-  <p>^ - bitwise xor</p>
-  <li>The return value is the set of bits that are set in one one of the lhs and rhs,
-with any bits set in both or neither being clear.
-This is useful for toggling individual bits.</li>
-  <p><< left shift</p>
-  <li>Shifts the number to the left. This is better understood in binary.
-The lhs is multiplied by 2 several times (as described by the rhs).
-If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
-is not a whole number, or is negative.
-Cannot be performed on vectors.</li>
-  <p>>> right shift</p>
-  <li>Shifts the number to the right. This is better understood in binary.
-The lhs is divided by 2 several times (as described by the rhs).
-If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
-is not a whole number, or is negative.
-Cannot be performed on vectors.</li>
-  <p> >< crossproduct</p>
-  <li>Only works on vectors. Returns the crossproduct of the two vectors, which is an
-vector that is tangenital to both input vectors. The length of the result is
-scaled by the length of the two inputs. The direction of the resulting vector
-can be flipped by swapping the lhs and rhs values (or just negating the result).</li>
-  <p>+ add</p>
-  <li>Adds the two arguments together.
-Mixing vectors and floats is not supported.</li>
-  <p>- subtract</p>
-  <li>Subtracts the rhs from the lhs.
-Mixing vectors and floats is not supported.</li>
-  <p>== and !=</p>
-  <li>This compares two variables looking for equality. This is not a simple compare,
-and thus null strings will be considered equal to merely empty strings. +0.0 and
--0.0 will compare as equal, etc.
-== results in 1 when they are equal. != results in 1 when they are not equal.
-Otherwise both result in 0.</li>
-  <p>>= <= < ></p>
-  <li>Numeric comparisons. Valid for floats, ints and pointers, but not vectors, ents,
-fields, functions, etc</li>
-  <p>unary ! logical not</p>
-  <li>Evaluates the truth of its argument, and flips it, resulting in either 1.0 or
-+0.0. Empty strings are considered false, vectors are considered in their
-entirety, floats consider -0.0 to be false, otherwise tests for null.</li>
-  <p>= assignment</p>
-  <li>This is the standard assignment operator. This operator accepts any type
-(including structs/unions) except arrays, but the rhs MUST be compatible with
-the lhs type. Assignments and initialisers work a little differently, with
-initialisers having implicit types and thus allowing function bodies or structs
-to be defined without casts.</li>
-  <p>+= -= |= &= &~= ^= *= <<= >>= /=</p>
-  <li>These are special assignment operators that perform an operation on the target.
-For example, 'lhs += rhs' is equivelent to 'lhs = lhs + rhs;'.
-This applies to each operator listed.
-Thus foo *= 4; will multiply foo by 4, and store the result into foo, basically
-'lhs OP= rhs;' is equivelent to 'lhs=lhs OP rhs;'
-(note that &~= is equivelent to TWO operators, specifically
-'lhs = (lhs) & ~(rhs);', but otherwise follows the same form)</li>
-  <p>(+) bitset</p>
-  <li>Equivelent to 'lhs |= rhs;' or 'lhs = lhs | rhs;', changing lhs to a value which
-includes all bits that were set in the rhs.
-This operator is implemented for hexenc compatibility.</li>
-  <p>(-) bitclear</p>
-  <li>Equivelent to 'lhs = lhs & ~rhs;', changing lhs to a value which has no bits
-set that were in the rhs.
-This operator is implemented for hexenc compatibility.</li>
-  <p>ternary ?: conditional</p>
-  <li>Given the line 'result = A?B:C;', the result will be be equal to B ONLY if A is
-true, otherwise equal to C. B may be ommitted, and if so will be equivelent to
-A. Side effects will not be executed in the side that was not taken.</li>
-  <p>&& logical and</p>
-  <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if BOTH sides
-are considered true, and 0.0f if neither or only one is considered true.
-Does NOT early-out - both sides WILL be executed in full. (There is a
-compiler-flag to enable early-out, in which case the lhs will always be
-executed, but the rhs will be skipped if the lhs is true.)
-Truth is a matter of who asks, and this comparison always considers -0.0 to be
-false.</li>
-  <p>|| logical or</p>
-  <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if EITHER side
-is considered true, and 0.0f if neither is considered true.
-Does NOT early-out - both sides WILL be executed in full. (There is a
-compiler-flag to enable early-out, in which case the lhs will always be
-executed, but the rhs will be skipped if the lhs is false.)
-Truth is a matter of who asks, and this comparison always considers -0.0 to be
-false.</li>
-  <p>, list</p>
-  <li>Seperates a list of expressions.
-The following does not apply to argument lists - function call parsing uses
-EVERY argument.
-The return value of 'a,b' is actually just the rhs, but any side effects in the
-lhs will be executed first. This inclues assignments or pre/post-increment
-operators.
-Thus lists are useful only where you want hidden sideeffects.
-<pre>
+  <ul>
+    unary ~ bitwise not<br>
+    <li>Sets any bit that was clear, and clears any bit that was set.
+      Note that this exploits Two's complement numbers, and thus will usually result
+      in negative numbers. This does not mean that you should try using more than 23
+      bits in float-based bitfields, but should be safe so long as the upper 9 bits
+      are sign-extended.</li>
+    unary * dereference<br>
+    <li>Dereferencing a pointer means to follow the pointer back to the piece of memory
+      that the pointer refers to, either to read or write that memory.
+      It is possible to write to pointers without opcode extensions, but not read from
+      them.</li>
+    unary & reference<br>
+    <li>Obtains the address (aka: a reference) to the specified value.
+      This cannot be used on intermediate values, but can be used on array lookups,
+      fields, or globals.
+      This operator normally REQUIRES opcode extensions, however &self.skin is valid
+      even without, but the resulting pointer should be considered write-only.</li>
+    * multiply<br>
+    <li>Vector * vector is actually a dotproduct.
+      That is: (lhs_x*rhs_x)+(lhs_y*rhs_y)+(lhs_z+rhs_z)] and thus results in a single
+      float instead of a vector type.
+      Otherwise vectors and floats can be mixed, with the vector scaled by the float.</li>
+    / divide<br>
+    <li>Divides the left hand side by the right.
+      Vectors are only supported as the lhs. The rhs must always be a float or int.
+      If both arguments are ints then the result will round towards 0.</li>
+    % modulo</p>
+    <li>Performs a division, but returns the remainder (which might be 0).
+      This is true even for floats where none of the lhs, rhs, nor the result are
+      required to be a whole number.</li>
+     & bitwise and<br>
+    <li>The return value is the set of bits that are set in both the lhs and rhs.
+      Vectors can be used (but not mixed).</li>
+    | bitwise or<br>
+    <li>The return value is the set of bits that are set in either the lhs and rhs.
+      Vectors can be used (but not mixed). Note that due to floating point precision,
+      floats (or vector components) are limited to about 23 bits. Trying to set more
+      bits will result in a loss of precision which will typically result in the
+      lowest bits being forgotten.</li>
+    ^ - bitwise xor<br>
+    <li>The return value is the set of bits that are set in one one of the lhs and rhs,
+      with any bits set in both or neither being clear.
+      This is useful for toggling individual bits.</li>
+      << left shift<br>
+        <li>Shifts the number to the left. This is better understood in binary.
+          The lhs is multiplied by 2 several times (as described by the rhs).
+          If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
+          is not a whole number, or is negative.
+          Cannot be performed on vectors.</li>
+        >> right shift<br>
+        <li>Shifts the number to the right. This is better understood in binary.
+          The lhs is divided by 2 several times (as described by the rhs).
+          If the rhs is 0 then the result is simply the lhs. Behaviour is undefined if rhs
+          is not a whole number, or is negative.
+          Cannot be performed on vectors.</li>
+        >< crossproduct<br>
+            <li>Only works on vectors. Returns the crossproduct of the two vectors, which is an
+              vector that is tangenital to both input vectors. The length of the result is
+              scaled by the length of the two inputs. The direction of the resulting vector
+              can be flipped by swapping the lhs and rhs values (or just negating the result).</li>
+            + add<br>
+            <li>Adds the two arguments together.
+              Mixing vectors and floats is not supported.</li>
+            - subtract<br>
+            <li>Subtracts the rhs from the lhs.
+              Mixing vectors and floats is not supported.</li>
+            == and !=<br>
+            <li>This compares two variables looking for equality. This is not a simple compare,
+              and thus null strings will be considered equal to merely empty strings. +0.0 and
+              -0.0 will compare as equal, etc.
+              == results in 1 when they are equal. != results in 1 when they are not equal.
+              Otherwise both result in 0.</li>
+            >= <= <><br>
+            <li>Numeric comparisons. Valid for floats, ints and pointers, but not vectors, ents,
+              fields, functions, etc</li>
+            unary ! logical not<br>
+            <li>Evaluates the truth of its argument, and flips it, resulting in either 1.0 or
+              +0.0. Empty strings are considered false, vectors are considered in their
+              entirety, floats consider -0.0 to be false, otherwise tests for null.</li>
+            = assignment<br>
+            <li>This is the standard assignment operator. This operator accepts any type
+              (including structs/unions) except arrays, but the rhs MUST be compatible with
+              the lhs type. Assignments and initialisers work a little differently, with
+              initialisers having implicit types and thus allowing function bodies or structs
+              to be defined without casts.</li>
+            += -= |= &= &~= ^= *= <<=>>= /=<br>
+            <li>These are special assignment operators that perform an operation on the target.
+              For example, 'lhs += rhs' is equivelent to 'lhs = lhs + rhs;'.
+              This applies to each operator listed.
+              Thus foo *= 4; will multiply foo by 4, and store the result into foo, basically
+              'lhs OP= rhs;' is equivelent to 'lhs=lhs OP rhs;'
+              (note that &~= is equivelent to TWO operators, specifically
+              'lhs = (lhs) & ~(rhs);', but otherwise follows the same form)</li>
+            (+) bitset<br>
+            <li>Equivelent to 'lhs |= rhs;' or 'lhs = lhs | rhs;', changing lhs to a value which
+              includes all bits that were set in the rhs.
+              This operator is implemented for hexenc compatibility.</li>
+            (-) bitclear<br>
+            <li>Equivelent to 'lhs = lhs & ~rhs;', changing lhs to a value which has no bits
+              set that were in the rhs.
+              This operator is implemented for hexenc compatibility.</li>
+            ternary ?: conditional<br>
+            <li>Given the line 'result = A?B:C;', the result will be be equal to B ONLY if A is
+              true, otherwise equal to C. B may be ommitted, and if so will be equivelent to
+              A. Side effects will not be executed in the side that was not taken.</li>
+            && logical and<br>
+            <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if BOTH sides
+              are considered true, and 0.0f if neither or only one is considered true.
+              Does NOT early-out - both sides WILL be executed in full. (There is a
+              compiler-flag to enable early-out, in which case the lhs will always be
+              executed, but the rhs will be skipped if the lhs is true.)
+              Truth is a matter of who asks, and this comparison always considers -0.0 to be
+              false.</li>
+            || logical or<br>
+            <li>Asesses the truth of the lhs and rhs sides, and results in 1.0f if EITHER side
+              is considered true, and 0.0f if neither is considered true.
+              Does NOT early-out - both sides WILL be executed in full. (There is a
+              compiler-flag to enable early-out, in which case the lhs will always be
+              executed, but the rhs will be skipped if the lhs is false.)
+              Truth is a matter of who asks, and this comparison always considers -0.0 to be
+              false.</li>
+            , list<br>
+            <li>Seperates a list of expressions.
+              The following does not apply to argument lists - function call parsing uses
+              EVERY argument.
+              The return value of 'a,b' is actually just the rhs, but any side effects in the
+              lhs will be executed first. This inclues assignments or pre/post-increment
+              operators.
+              Thus lists are useful only where you want hidden sideeffects.
+              <pre>
 <code>
   vector tmp; vec = ( tmp_x = 5, tmp_y = 4,tmp_z = 7, tmp );
 </code>
 </pre>
-Is equivelent to 'vec = [5,4,7];' and thus has limited use in macros or to
-express multiple statements without the use of a block and any extra indentation
-required by coding style guides.</li>
-</ul>
+              Is equivelent to 'vec = [5,4,7];' and thus has limited use in macros or to
+              express multiple statements without the use of a block and any extra indentation
+              required by coding style guides.
+            </li>
+  </ul>
+
+  <h3>Intrinsics</h3>
+  <ul>
+    <li>_(string strimmediate)
+      <br>
+      Defines a translation string. This auto-generates a symbol prefixed with
+      'dotranslate_'. Certain engines can then use this to automatically replace your
+      strings with strings containing text from other natural languages, via the use
+      of a .po file (eg: progs.en_gb.po). You can use some part of the gnu gettext
+      library to extract these.
+      This intrinsic can be used even at global scope for initialisers.
+    </li>
+    <li>sizeof(variableortype)
+      <br>
+      This function accepts either variables or types, and reports the size-in-bytes
+      of the variable (or a variable of that type). When used on arrays, it returns
+      the size of the entire array (dereference it to read the size of a single
+      element of the array), but usually you should just read thearray.length instead.
+    </li>
+    <li>alloca(bytes)
+      <br>
+      Attempts to allocate stack memory, and returns a pointer.
+      This memory will be released when your current function returns.
+    </li>
+    <li>va_arg(index, type)
+      <br>
+      When in a QC function defined as accepting variable arguments, this reads the
+      nth argument, and interprets it as the specified type.
+      I would generally recommend to avoid variable arguments on qc functions on
+      account of there being no type checking, as well as performance issues with
+      emulated arrays.
+      Ideally, use optional or even __variant args instead.
+    </li>
+    <li>random([min,] max)
+      <br>
+      Returns a random number between min and max. If there's only one argument, then
+      the min argument will be interpretted as 0.
+      Note that this works by invoking the engine's arg-less random() builtin, and
+      said builtin MAY return 1 in various engines (but NOT fte+qss+dp) which can and
+      WILL result in bounds check issues.
+    </li>
+    <li>randomv([min,] max)
+      <br>
+      Returns a random vector within the specified box.
+      Note that different engines handle random() differently, and this can and
+      eventually WILL result in bounds check issues when combined with arrays.
+    </li>
+    <li>spawn(classtype, field1:value1, field2:value2, ...)
+      <br>
+      This uses the regular spawn builtin and then assigns to the fields for that
+      specified class, then calls the class's constructor before returning the new
+      object to the caller.
+      It is worth noting that this is consistent with map entities.
+
+    </li>
+    <li>used_sound(soundname) / used_model(modelname)
+      <br>
+      Arguments MUST be string constants/immediates.
+      These serve to silence warnings about sounds or models being precached but not
+      use. This can legitimately happen if there is a setmodel call that accepts
+      (as fteqcc can only flag constant modelnames, not variables.
+      They return their arguments, so eg:
+      <pre>
+  <code>
+    self.mdl = used_model("progs/foo.mdl"); 
+
+..is fine.
+  </code>
+</pre>
+    </li>
+    <li>autocvar(name, value[, description])
+      <br>
+      Creates an autocvar with the specified name (not quoted). The autocvar's type
+      will be inferred from the value's type (which must be an intrinsic).
+      The description is useful only in combination with the '-v -v -v' argument
+      tupple, which dumps a list of all autocvars for easy copying into some
+      default.cfg file (as well as other output).
+    </li>
+    <li>entnum(ent)
+      <br>
+      Probably unsafe. Attempts to guess the entity's index.
+      Ideally use the num_for_edict builtin instead, if you can.
+      <br>
+      <ul>
+        <li>precache_sound</li>
+        <li>precache_model</li>
+        <li>precache_texture</li>
+        <li>precache_file</li>
+        <li>setmodel</li>
+        <li>localsound</li>
+        <li>sound</li>
+      </ul>
+      These intrinsics affect warnings about redundant/missing precaches.
+      precache_file lines might get stripped (along with their arguments).
+      Otherwise they are simply their normal builtins.
+      If using the outdated write-paks feature, the named files will be included into
+      paks numbered according to the numeric postfixes used on the precache intrinsic.
+    </li>
+    <ul>
+      <li>floor</li>
+      <li>ceil</li>
+      <li>sin</li>
+      <li>cos</li>
+      <li>log</li>
+      <li>sqrt</li>
+      <li>pow</li>
+      <li>mod</li>
+      <li>bitshift</li>
+    </ul>
+    These intrinsics mirror their builtins, falling back to the builtin where the
+    arguments are not constants.
 
 
-  </body>
+</body>
+
 </html>
