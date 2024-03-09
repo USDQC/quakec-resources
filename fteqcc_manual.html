@@ -1574,6 +1574,55 @@ float *ptr;     // define a pointer-to-float
     arguments are not constants.
 
 
+<h3>Modelgen Commands</h3>
+<p>iD software's modelgen and spritegen tools were designed to read special
+commands directly from qc files, ensuring that data was kept in sync.
+<br>
+Those tools are basically irrelevant now, but the qc syntax remains regardless,
+and has been extended Model generation commands always start on a new line with
+a leading $ char.
+
+<ul>
+  <li>$cd</li>
+  <li>$origin</li>
+  <li>$base</li>
+  <li>$flags</li>
+  <li>$scale</li>
+  <li>$skin</li>
+  Does nothing.
+</ul>
+</p>
+  <li>$frame foo bar etc
+    <br>
+Defines a series of frame macros. One per token.
+Duplicate names will generate a gap (and a warning).
+The compiler will then expand any $foo tokens to a 0-based float that is one
+higher than the previous macro.
+  </li>
+  <li>$modelname
+    <br>
+Allows for switching between models easily.
+Models are expected to use different frame names.
+  </li>
+  <li>$framesave NAME
+    <br>
+Saves the number of frame macros. Use $framerestore to return to it as needed.
+  </li>
+  <li>$framerestore NAME
+    <br>
+Sets up the next $frame to return to a previous value.
+  </li>
+  <li>$framevalue IDX
+    <br>
+Sets up the next $frame to use the specified value
+  </li>
+  <li>$flush
+    <br>
+Wipes the list of valid frame macros.
+  </li>
+</ul>
+
+
 </body>
 
 </html>
