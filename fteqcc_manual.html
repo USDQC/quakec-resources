@@ -1842,6 +1842,53 @@ Good for GPL compliance!
       </li>
     </ul>
 
+    <h3>Engine Support</h3>
+    <p>
+      Different engines support different extensions.
+These take the form of added builtins, new fields with special side effects (or
+even existing fields with new values meaning new stuff), or globals that report
+additional results or change the behaviour of existing builtins.
+Engine extensions can be useful but they can also restrict which engines your
+mod can run on. You'll need to find the right compromise for your mod yourself.
+<br>
+Most of the common important extensions can be queried at run time.
+This is done eg as following:
+<pre>
+  <code>
+    if (cvar("pr_checkextension"))
+        if (checkextension("FRIK_FILE"))
+            canopenfiles = TRUE;
+  </code>
+</pre>
+
+Note that QuakeC does not normally early-out, so the two if statements must be
+nested and not replaced with an && operator.
+FTEQW (and QSS) have a few builtins that have no formal named extension.
+These can be queried with eg the following:
+<pre>
+  <code>
+    if (cvar("pr_checkextension"))
+        if (checkextension("FTE_QC_CHECKCOMMAND"))
+        {
+            if (checkbuiltin(search_getfilemtime))
+                cancheckmodificationtimes = TRUE;
+            if (checkcommand("cef"))
+                canusewebbrowserplugin = TRUE;
+        }
+  </code>
+</pre>
+Upcoming is a list of the engines with extensive extensions.
+These files typically contain comments that describe the new stuff either on a
+per-feature basis or per-extension basis.
+If you don't understand the description of a feature for one engine then you may
+find another engine describes it with greater clarity.
+    </p>
+    <ul>
+      <li><a href="http://fte.triptohell.info/moodles/fteqcc/fteextensions.qc">FTE</a></li>
+      <li><a href="http://fte.triptohell.info/moodles/qss/QSS_DevKit.zip">QuakeSpasm-Spiked</a></li>
+      <li><a href="http://svn.icculus.org/twilight/trunk/darkplaces/dpdefs/">DarkPlaces</a></li>
+    </ul>
+
 </body>
 
 </html>
