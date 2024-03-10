@@ -1,4 +1,4 @@
-# Work in progress : QuakeC Resources
+# QuakeC Resources
 
 ## About the project
 
