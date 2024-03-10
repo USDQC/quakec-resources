@@ -1623,6 +1623,225 @@ Wipes the list of valid frame macros.
 </ul>
 
 
+<h3>Compiler Flags</h3>
+<p>These are enabled with -Ffoo or disabled with -Fno-foo.
+Many (but not all) can also be reconfigured mid-compile, using:
+    #pragma flag [en|dis]able foo</p>
+
+    <ul>
+      <li>-acc
+        <br>
+Reacc support.
+Reacc is a pascall like compiler. It was released before the Quake source was
+released.
+This flag has a few effects. It sorts all qc files in the current directory
+into alphabetical order to compile them. It also allows Reacc global/field
+distinctions, as well as interprets | chars as new-line in strings.
+Whilst case insensitivity and lax type checking are supported by reacc, they
+are seperate compiler flags in fteqcc.
+      </li>
+      <li>-qccx
+        <br>
+QCCX syntax
+WARNING: This syntax makes mods inherantly engine specific.
+Do NOT use unless you know what you're doing.
+This is provided for compatibility only.
+Any entity hacks will be unsupported in FTEQW, DP, and others, resulting in
+engine crashes if the code in question is executed.
+      </li>
+      <li>-kce
+        <br>
+Keywords Coexist
+If you want keywords to NOT be disabled when they a variable by the same name
+is defined, check here.
+      </li>
+      <li>-parms
+        <br>
+Define offset parms
+When set, defines explicit PARM0 PARM1 etc symbols (instead of leaving the
+unnamed). These are useful if you make use of the asm keyword for function
+calls, or you wish to create your own variable arguments. This is an easy way to
+break decompilers.
+      </li>
+      <li>-autoproto
+        <br>
+Automatic Prototyping
+Causes compilation to take two passes instead of one. The first pass, only the
+definitions are read. The second pass actually compiles your code. This means
+you never have to remember to prototype functions again.
+Note that while you cannot change this flag mid-compile, you can use:
+    #pragma autoproto 
+..before any symbol declarations, which can help avoid special compilation
+instructions for third-parties etc.
+This does not work for type declarations - typedefs must still be in logical
+order.
+      </li>
+      <li>-wasm
+        <br>
+Dump Assembler
+Writes out a qc.asm which contains all your functions but in assembler.
+This is a great way to look for bugs in fteqcc, but can also be used to see
+exactly what your functions turn into, and thus how to optimise statements
+better.
+It is generally favourable to use the annotate option instead.
+      </li>
+      <li>-annotate
+        <br>
+Annotate Sourcecode
+Annotate source code with assembler statements on compile (requires gui).
+      </li>
+      <li>-nullemptystr
+        <br>
+Null String Immediates
+Empty string immediates will have the raw value 0 instead of 1.
+      </li>
+      <li>-ifstring
+        <br>
+if(string) fix
+Causes if(string) to behave identically to if(string!="") This is most useful
+with addons of course, but also has adverse effects with FRIK_FILE's fgets,
+where it becomes impossible to determin the end of the file. In such a case, you
+can still use asm {IF string 2;RETURN} to detect eof and leave the function.
+      </li>
+      <li>-iffloat
+        <br>
+if(-0.0) fix
+Fixes certain floating point logic. Without this, (-0.0) will be considered true
+inside conditionals, while (!-0.0) will ALSO be considered true.
+      </li>
+      <li>-ifvector
+        <br>
+if('0 1 0') fix
+Fixes conditional vector logic. Without this, conditionals will consider only
+the first component, using the same rules for single floats.
+      </li>
+      <li>-vectorlogic
+        <br>
+v&&v||v fix
+Fixes conditional vector logic. Otherwise these operators would check only the
+first component.
+      </li>
+      <li>-brokenarray
+        <br>
+array[0] omission
+Treat references to arrays as references to the first index of said array, to
+replicate an old fteqcc bug instead of returning a pointer to the first element
+of the array.
+      </li>
+      <li>-rootconstructor
+        <br>
+root constructor first
+When enabled, the root constructor of classes should be called first, just like
+in C++.
+      </li>
+      <li>-caseinsens
+        <br>
+Case insensitivity
+Causes fteqcc to become case insensitive whilst compiling names. It's generally
+not advised to use this as it compiles a little more slowly and provides little
+benefit. However, it is required for full reacc support.
+      </li>
+      <li>-lax
+        <br>
+Lax type checks
+Disables many errors (generating warnings instead) when function calls or
+operations refer to two normally incompatible types. This is required for
+reacc support, and can also allow certain (evil) mods to compile that were
+originally written for frikqcc.
+      </li>
+      <li>-hashonly
+        <br>
+Hash-only constants
+Allows only the use of #constant for precompiler constants, allows certain
+preqcc using mods to compile. Specifically, preprocessor macros will NOT be
+expanded unless they explicitly have a leading #.
+      </li>
+      <li>-lo
+        <br>
+Logic ops
+This changes the behaviour of your code. It generates additional operations to
+skip the rhs of && and || expressions where the lhs prevents the rhs from being
+significant (like in C). With this flag, the line if (0 && somefunction()) will
+never call the function. It can thus be considered an optimisation.
+However, due to the change of behaviour, it is not considered so by fteqcc.
+Note that due to inprecisions with floats, this flag can cause runaway loop
+errors within the player walk and run functions (without iffloat also enabled).
+This code is advised:
+<pre>
+  <code>
+  In player_stand1:
+        if (self.velocity_x || self.velocity_y)
+    In player_run: 
+        if (!(self.velocity_x || self.velocity_y))
+</code>
+</pre>
+      </li>
+      <li>-msvcstyle
+        <br>
+MSVC-style errors
+Generates warning and error messages in a format that MSVC understands, to
+facilitate IDE integration.
+      </li>
+      <li>-debugmacros
+        <br>
+Verbose Macro Expansion
+Print out the contents of macros that are expanded.
+This can help look inside macros that are expanded and is especially handy if
+people are using preprocessor hacks.
+      </li>
+      <li>-filetimes
+        <br>
+Check Filetimes
+Recompiles the progs only if the input file modification times are more recent
+than that of the output file. Requires old-style .src files and will ignore
+modification times of #included files. If nothing changed then the compiler
+quits early without writing any output.
+      </li>
+      <li>-fastarrays
+        <br>
+fast arrays where possible
+Generates extra instructions inside array handling functions to detect engine
+and use extension opcodes only in supporting engines.
+Adds a global which is set by the engine if the engine supports the extra
+opcodes. Note that this applies to all arrays or none.
+      </li>
+      <li>-assumeint
+        <br>
+Assume Integers
+Numerical constants are assumed to be integers, instead of floats.
+      </li>
+      <li>-subscope
+        <br>
+Subscoped Locals
+Restrict the scope of locals to the block they are actually defined within, as
+in C.
+      </li>
+      <li>-typeexplicit
+        <br>
+Explicit types
+All type conversions must be explicit or directly supported by instruction set.
+      </li>
+      <li>-boundchecks
+        <br>
+Disable Bound Checks
+Disable array index checks, speeding up array access but can result in your code
+misbehaving.
+      </li>
+      <li>-nofileline
+        <br>
+Ignore #pragma file
+Ignores #pragma file(foo) and #pragma line(foo), so that errors and symbols
+reflect the actual lines, instead of the original source.
+      </li>
+      <li>-embedsrc
+        <br>
+Embed Sources
+Write the sourcecode into the output file. The resulting .dat can be opened as a
+standard zip archive (or by fteqccgui).
+Good for GPL compliance!
+      </li>
+    </ul>
+
 </body>
 
 </html>
